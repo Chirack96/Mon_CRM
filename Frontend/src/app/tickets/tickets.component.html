@@ -1,0 +1,53 @@
+<div class="p-4 sm:ml-64">
+  <div class="p-4 rounded-lg dark:border-gray-700">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold text-gray-700">Tickets</h2>
+      <button (click)="showAddTicketForm = !showAddTicketForm" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700">
+        {{ showAddTicketForm ? 'Hide Form' : 'Add Ticket' }}
+      </button>
+    </div>
+
+    <div *ngIf="showAddTicketForm" class="mb-4">
+      <form (ngSubmit)="createTicket()" #ticketForm="ngForm">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <input [(ngModel)]="newTicket.title" name="title" placeholder="Title" required class="p-2 border rounded">
+          <input [(ngModel)]="newTicket.description" name="description" placeholder="Description" required class="p-2 border rounded">
+          <select [(ngModel)]="newTicket.status" name="status" required class="p-2 border rounded">
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600">Create Ticket</button>
+      </form>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white">
+        <thead>
+        <tr>
+          <th class="py-2 px-4 border-b border-gray-200">Title</th>
+          <th class="py-2 px-4 border-b border-gray-200">Description</th>
+          <th class="py-2 px-4 border-b border-gray-200">Status</th>
+          <th class="py-2 px-4 border-b border-gray-200">Created Date</th>
+          <th class="py-2 px-4 border-b border-gray-200">Updated Date</th>
+          <th class="py-2 px-4 border-b border-gray-200">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let ticket of tickets">
+          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.title }}</td>
+          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.description }}</td>
+          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.status }}</td>
+          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.createdDate }}</td>
+          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.updatedDate }}</td>
+          <td class="py-2 px-4 border-b border-gray-200">
+            <button (click)="updateTicket(ticket)" class="bg-yellow-500 text-white px-4 py-1 rounded-lg shadow-md hover:bg-yellow-600">Edit</button>
+            <button (click)="deleteTicket(ticket.id)" class="bg-red-500 text-white px-4 py-1 rounded-lg shadow-md hover:bg-red-600 ml-2">Delete</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

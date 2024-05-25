@@ -1,0 +1,48 @@
+<div class="p-4 sm:ml-64">
+  <div class="p-4 rounded-lg dark:border-gray-700">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold text-gray-700">Products</h2>
+      <button (click)="showAddProductForm = !showAddProductForm" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700">
+        {{ showAddProductForm ? 'Hide Form' : 'Add Product' }}
+      </button>
+    </div>
+
+    <div *ngIf="showAddProductForm" class="mb-4">
+      <form (ngSubmit)="createProduct()" #productForm="ngForm">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <input [(ngModel)]="newProduct.name" name="name" placeholder="Product Name" required class="p-2 border rounded">
+          <input [(ngModel)]="newProduct.description" name="description" placeholder="Description" required class="p-2 border rounded">
+          <input [(ngModel)]="newProduct.price" name="price" type="number" placeholder="Price" required class="p-2 border rounded">
+          <input [(ngModel)]="newProduct.stock" name="stock" type="number" placeholder="Stock" required class="p-2 border rounded">
+        </div>
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600">Create Product</button>
+      </form>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white">
+        <thead>
+        <tr>
+          <th class="py-2 px-4 border-b border-gray-200">Name</th>
+          <th class="py-2 px-4 border-b border-gray-200">Description</th>
+          <th class="py-2 px-4 border-b border-gray-200">Price</th>
+          <th class="py-2 px-4 border-b border-gray-200">Stock</th>
+          <th class="py-2 px-4 border-b border-gray-200">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let product of products">
+          <td class="py-2 px-4 border-b border-gray-200">{{ product.name }}</td>
+          <td class="py-2 px-4 border-b border-gray-200">{{ product.description }}</td>
+          <td class="py-2 px-4 border-b border-gray-200">{{ product.price }}</td>
+          <td class="py-2 px-4 border-b border-gray-200">{{ product.stock }}</td>
+          <td class="py-2 px-4 border-b border-gray-200">
+            <button class="bg-yellow-500 text-white px-4 py-1 rounded-lg shadow-md hover:bg-yellow-600">Edit</button>
+            <button (click)="deleteProduct(product.id)" class="bg-red-500 text-white px-4 py-1 rounded-lg shadow-md hover:bg-red-600 ml-2">Delete</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

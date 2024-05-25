@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.p-4 {
+  padding: 1rem;
+}
+
+.sm\:ml-64 {
+  @media (min-width: 640px) {
+    margin-left: 16rem;
+  }
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-gray-700 {
+  color: #4a5568;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-gray-900 {
+  color: #1a202c;
+}

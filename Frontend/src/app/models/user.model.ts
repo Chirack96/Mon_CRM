@@ -1,0 +1,24 @@
+export class User {
+  id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  groupe: string;
+
+  constructor(
+    id: number,
+    firstname: string,
+    lastname: string,
+    email: string,
+    password: string,
+    groupe: string
+  ) {
+    this.id = id;
+    this.firstname = firstname;
+    this.lastname = lastname;
+    this.email = email;
+    this.password = password;
+    this.groupe = groupe;
+  }
+}
