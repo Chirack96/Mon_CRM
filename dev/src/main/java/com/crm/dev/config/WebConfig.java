@@ -15,7 +15,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:4200")  // Adjust this to match your front-end URL
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(false);
     }
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {

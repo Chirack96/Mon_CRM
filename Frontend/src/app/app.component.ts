@@ -1,15 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {HeaderComponent} from "./header/header.component";
-import {HomeComponent} from "./home/home.component";
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
+import { AuthService } from './services/auth.service';
+import { AsideComponent } from './aside/aside.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, HomeComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, AsideComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'Frontend';
+export class AppComponent implements OnInit {
+  private authService = inject(AuthService);
+
+  ngOnInit(): void {
+    this.authService.checkInitialLoginState();
+  }
 }

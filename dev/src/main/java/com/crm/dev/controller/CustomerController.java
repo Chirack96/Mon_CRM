@@ -29,11 +29,7 @@ public class CustomerController {
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
         Optional<Customer> customer = customerService.getCustomerById(id);
-        if (customer.isPresent()) {
-            return ResponseEntity.ok(customer.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return customer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

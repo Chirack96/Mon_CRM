@@ -14,14 +14,6 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    public User authenticate(String email, String password) {
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            return user;
-        }
-        return null;
-    }
     public User register(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);

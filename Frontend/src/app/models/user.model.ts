@@ -7,12 +7,12 @@ export class User {
   groupe: string;
 
   constructor(
-    id: number,
-    firstname: string,
-    lastname: string,
-    email: string,
-    password: string,
-    groupe: string
+    id: number = 0,
+    firstname: string = '',
+    lastname: string = '',
+    email: string = '',
+    password: string = '',
+    groupe: string = ''
   ) {
     this.id = id;
     this.firstname = firstname;

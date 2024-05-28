@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import {NgIf} from "@angular/common";
-import {User} from "../models/user.model";
-import {FormsModule} from "@angular/forms";
-import {AuthService} from "../services/auth.service";
+import { NgIf } from "@angular/common";
+import { User } from "../models/user.model";
+import { FormsModule } from "@angular/forms";
+import { AuthService } from "../services/auth.service";
 
 @Component({
   selector: 'app-register',
@@ -12,10 +12,10 @@ import {AuthService} from "../services/auth.service";
     FormsModule
   ],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
-  user: User = new User(0, '', '', '', '', '');
+  user: User = new User();
   confirmPassword: string = '';
   showPassword = false;
   showConfirmPassword = false;
@@ -28,6 +28,8 @@ export class RegisterComponent {
       return;
     }
     try {
+      // Ensure 'groupe' is set to an empty string if not provided
+      this.user.groupe = this.user.groupe || '';
       const response = await this.authService.register(this.user);
       console.log('User registered successfully', response);
     } catch (error) {
@@ -46,5 +48,4 @@ export class RegisterComponent {
       confirmPasswordField.type = this.showConfirmPassword ? 'text' : 'password';
     }
   }
-
 }

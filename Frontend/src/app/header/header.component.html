@@ -12,9 +12,10 @@
     </nav>
   </div>
   <div class="flex items-center space-x-4">
-
-      <button><a routerLink="/register" class="bg-white text-blue-600 px-3 py-2 rounded">Register</a></button>
-      <button><a routerLink="/login" class="bg-white text-blue-600 px-3 py-2 rounded">Login</a></button>
-
+    <ng-container *ngIf="!isLoading">
+      <button *ngIf="!isLogged"><a routerLink="/register" class="bg-white text-blue-600 px-3 py-2 rounded">Register</a></button>
+      <button *ngIf="!isLogged"><a routerLink="/login" class="bg-white text-blue-600 px-3 py-2 rounded">Login</a></button>
+      <button *ngIf="isLogged" (click)="logout()" class="bg-white text-blue-600 px-3 py-2 rounded">Logout</button>
+    </ng-container>
   </div>
 </header>

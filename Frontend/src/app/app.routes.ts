@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { HomeComponent } from './home/home.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {CustomersComponent} from "./customers/customers.component";
 import {ReportsComponent} from "./reports/reports.component";
@@ -11,10 +10,6 @@ import {OrdersComponent} from "./orders/orders.component";
 import {TicketsComponent} from "./tickets/tickets.components";
 
 export const routes: Routes = [
-  {
-    path: '',
-    component: HomeComponent,
-    children: [
       { path: 'login', component: LoginComponent},
       { path: 'register', component: RegisterComponent},
       { path: 'dashboard' , component: DashboardComponent},
@@ -24,10 +19,7 @@ export const routes: Routes = [
       {path: 'products' , component: ProductsComponent},
       {path: 'orders' , component: OrdersComponent},
       {path: 'tickets' , component: TicketsComponent},
-
-    ]
-  },
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
-
+  { path: 'home', redirectTo: '/dashboard', pathMatch: 'full' },
+      { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
 
 ];

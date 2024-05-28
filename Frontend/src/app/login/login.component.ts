@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { NgIf } from "@angular/common";
 import { AuthService } from "../services/auth.service";
-import { User } from "../models/user.model";
 import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -19,12 +19,13 @@ export class LoginComponent {
   password: string = '';
   showPassword = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   async login() {
     try {
-      const user = await this.authService.login(this.email, this.password);
-      console.log('User logged in successfully', user);
+      const result = await this.authService.login(this.email, this.password);
+      console.log('User logged in successfully', result);
+      this.router.navigate(['/dashboard']).then(() => console.log('Navigated to dashboard.'));
     } catch (error) {
       console.error('Invalid email or password', error);
     }
