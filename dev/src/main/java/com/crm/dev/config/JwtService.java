@@ -62,6 +62,10 @@ public class JwtService {
         return expirationDate.before(new Date());
     }
 
+    public String extractUsername(String token) {
+        return this.getClaim(token, Claims::getSubject);
+    }
+
     private <T> T getClaim(String token, Function<Claims, T> function) {
         Claims claims = getAllClaims(token);
         return function.apply(claims);

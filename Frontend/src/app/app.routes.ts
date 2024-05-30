@@ -8,6 +8,7 @@ import {SettingsComponent} from "./settings/settings.component";
 import {ProductsComponent} from "./products/products.component";
 import {OrdersComponent} from "./orders/orders.component";
 import {TicketsComponent} from "./tickets/tickets.components";
+import {UsersComponent} from "./users/users.component";
 
 export const routes: Routes = [
       { path: 'login', component: LoginComponent},
@@ -19,7 +20,8 @@ export const routes: Routes = [
       {path: 'products' , component: ProductsComponent},
       {path: 'orders' , component: OrdersComponent},
       {path: 'tickets' , component: TicketsComponent},
-  { path: 'home', redirectTo: '/dashboard', pathMatch: 'full' },
+      {path: 'users' , component: UsersComponent},
+      { path: 'home', redirectTo: '/dashboard', pathMatch: 'full' },
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
 
 ];

@@ -1,8 +1,8 @@
 import { Injectable, Inject, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import axios from 'axios';
+import {jwtDecode} from 'jwt-decode';
 import { User } from '../models/user.model';
-import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +10,8 @@ import { jwtDecode } from 'jwt-decode';
 export class AuthService {
   private baseUrl = 'http://localhost:8080/api/auth';
   private tokenKey = 'auth_token';
-  authStatus = signal(false);  // Expose the signal as public
-  isLoading = signal(true);    // New signal for loading state
+  authStatus = signal(false);
+  isLoading = signal(true);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.checkInitialLoginState();
@@ -25,7 +25,7 @@ export class AuthService {
       } else {
         this.authStatus.set(false);
       }
-      this.isLoading.set(false);  // Set loading to false after checking the initial state
+      this.isLoading.set(false);
     }
   }
 
@@ -98,5 +98,12 @@ export class AuthService {
       console.error('Token validation failed:', e);
       return false;
     }
+  }
+
+  getAuthHeaders() {
+    const token = this.getToken();
+    return {
+      Authorization: `Bearer ${token}`
+    };
   }
 }

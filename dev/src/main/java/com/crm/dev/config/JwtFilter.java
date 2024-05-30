@@ -1,7 +1,7 @@
 package com.crm.dev.config;
 
-import com.crm.dev.models.User;
 import com.crm.dev.service.UserService;
+import com.crm.dev.config.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Service
-
 public class JwtFilter extends OncePerRequestFilter {
     private final UserService userService;
     private final JwtService jwtService;
@@ -24,22 +23,27 @@ public class JwtFilter extends OncePerRequestFilter {
         this.userService = userService;
         this.jwtService = jwtService;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        boolean isTokenExpired = true;
         String token = request.getHeader("Authorization");
-        String username = null;
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
-            isTokenExpired = jwtService.isTokenExpired(token);
-            username = jwtService.loadUserFirstname(token);
+            logger.info("JWT Token: " + token); // Log the token to debug
+        } else {
+            logger.warn("JWT Token is missing or does not start with Bearer String");
         }
-        if (!isTokenExpired && username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = (User) userService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
+        if (token != null && !jwtService.isTokenExpired(token)) {
+            String username = jwtService.extractUsername(token);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
         }
         filterChain.doFilter(request, response);
     }
+
 }
