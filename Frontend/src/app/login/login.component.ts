@@ -25,7 +25,7 @@ export class LoginComponent {
     try {
       const result = await this.authService.login(this.email, this.password);
       console.log('User logged in successfully', result);
-      this.router.navigate(['/dashboard']).then(() => console.log('Navigated to dashboard.'));
+      this.router.navigate(['/customers']).then(() => console.log('Navigated to dashboard.'));
     } catch (error) {
       console.error('Invalid email or password', error);
     }

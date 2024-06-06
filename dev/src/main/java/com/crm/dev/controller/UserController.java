@@ -77,4 +77,14 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/addRole")
+    public ResponseEntity<?> addRoleToUser(@RequestParam String email, @RequestParam String roleName) {
+        try {
+            userService.addRoleToUser(email, roleName);
+            return ResponseEntity.ok("Role added successfully to user.");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body("Error adding role to user: " + ex.getMessage());
+        }
+    }
 }

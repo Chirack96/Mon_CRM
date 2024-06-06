@@ -1,9 +1,14 @@
 package com.crm.dev.service;
 
+import com.crm.dev.models.Role;
 import com.crm.dev.models.User;
+import com.crm.dev.repository.RoleRepository;
 import com.crm.dev.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,11 +17,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
@@ -25,7 +35,6 @@ public class UserService implements UserDetailsService {
     }
 
     public User saveUser(User user) {
-        // Hasher le mot de passe avant de sauvegarder l'utilisateur
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -48,10 +57,9 @@ public class UserService implements UserDetailsService {
             User user = new User();
             user.setFirstname("Jeany" + i);
             user.setLastname("Duponyt" + i);
-            user.setEmail("jean.duponyt" + i + "@eyxample.com");
-            user.setPassword(bCryptPasswordEncoder.encode("mypasysword" + i));
-            user.setGroupe("Employyé");
-
+            user.setEmail("jean.duponyt" + i + "@example.com");
+            user.setPassword(bCryptPasswordEncoder.encode("mypassword" + i));
+            user.setGroupe("Employee");
             users.add(userRepository.save(user));
         }
         return users;
@@ -69,13 +77,28 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = this.userRepository
-                .findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
+
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
-                new ArrayList<>()
+                authorities
         );
+    }
+
+    @Transactional
+    public void addRoleToUser(String email, String roleName) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role not found with name: " + roleName));
+
+        user.getRoles().add(role);
+        userRepository.save(user);
     }
 }

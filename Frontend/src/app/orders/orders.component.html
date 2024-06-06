@@ -8,13 +8,35 @@
     </div>
 
     <div *ngIf="showAddOrderForm" class="mb-4">
-      <form (ngSubmit)="createOrder()" #orderForm="ngForm">
+      <form [formGroup]="orderForm" (ngSubmit)="createOrder()">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          <input [(ngModel)]="newOrder.product.name" name="productName" placeholder="Product Name" required class="p-2 border rounded w-full">
-          <input [(ngModel)]="newOrder.quantity" name="quantity" type="number" placeholder="Quantity" required class="p-2 border rounded w-full">
-          <input [(ngModel)]="newOrder.price" name="price" type="number" placeholder="Price" required class="p-2 border rounded w-full">
-          <input [(ngModel)]="newOrder.date" name="date" type="date" placeholder="Date" required class="p-2 border rounded w-full">
-          <input [(ngModel)]="newOrder.status" name="status" placeholder="Status" required class="p-2 border rounded w-full">
+          <select formControlName="customerId" required class="p-2 border rounded w-full">
+            <option value="" disabled>Select Customer</option>
+            <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.firstName }} {{ customer.lastName }}</option>
+          </select>
+          <div *ngIf="orderForm.controls['customerId'].invalid && orderForm.controls['customerId'].touched" class="text-red-600">Customer is required.</div>
+
+          <div formArrayName="orderProducts" class="col-span-full">
+            <div *ngFor="let orderProduct of orderProducts.controls; let i=index" [formGroupName]="i" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <select formControlName="productId" required class="p-2 border rounded w-full">
+                <option value="" disabled>Select Product</option>
+                <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+              </select>
+              <div *ngIf="orderProduct.get('productId')?.invalid && orderProduct.get('productId')?.touched" class="text-red-600">Product is required.</div>
+
+              <input formControlName="quantity" type="number" placeholder="Quantity" required class="p-2 border rounded w-full">
+              <div *ngIf="orderProduct.get('quantity')?.invalid && orderProduct.get('quantity')?.touched" class="text-red-600">Quantity is required and must be greater than 0.</div>
+
+              <button type="button" (click)="removeOrderProduct(i)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600">Remove</button>
+            </div>
+            <button type="button" (click)="addOrderProduct()" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600">Add Product</button>
+          </div>
+
+          <input formControlName="orderDate" type="date" placeholder="Date" required class="p-2 border rounded w-full">
+          <div *ngIf="orderForm.controls['orderDate'].invalid && orderForm.controls['orderDate'].touched" class="text-red-600">Date is required.</div>
+
+          <input formControlName="status" placeholder="Status" required class="p-2 border rounded w-full">
+          <div *ngIf="orderForm.controls['status'].invalid && orderForm.controls['status'].touched" class="text-red-600">Status is required.</div>
         </div>
         <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600">Create Order</button>
       </form>
@@ -24,24 +46,27 @@
       <table class="min-w-full bg-white">
         <thead>
         <tr>
-          <th class="py-2 px-6 border-b border-gray-200">Product</th>
-          <th class="py-2 px-6 border-b border-gray-200">Quantity</th>
-          <th class="py-2 px-6 border-b border-gray-200">Price</th>
-          <th class="py-2 px-6 border-b border-gray-200">Date</th>
+          <th class="py-2 px-6 border-b border-gray-200">Customer</th>
+          <th class="py-2 px-6 border-b border-gray-200">Products</th>
+          <th class="py-2 px-6 border-b border-gray-200">Order Date</th>
           <th class="py-2 px-6 border-b border-gray-200">Status</th>
+          <th class="py-2 px-6 border-b border-gray-200">Total Price</th>
           <th class="py-2 px-6 border-b border-gray-200">Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr *ngFor="let order of orders">
-          <td class="py-2 px-6 border-b border-gray-200">{{ order.product.name }}</td>
-          <td class="py-2 px-6 border-b border-gray-200">{{ order.quantity }}</td>
-          <td class="py-2 px-6 border-b border-gray-200">{{ order.price }}</td>
-          <td class="py-2 px-6 border-b border-gray-200">{{ order.date }}</td>
-          <td class="py-2 px-6 border-b border-gray-200">{{ order.status }}</td>
+          <td class="py-2 px-6 border-b border-gray-200">{{ order.customer?.firstName }} {{ order.customer?.lastName }}</td>
           <td class="py-2 px-6 border-b border-gray-200">
-            <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-600">Edit</button>
-            <button (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 ml-2">Delete</button>
+            <ul>
+              <li *ngFor="let op of order.orderProducts">{{ op.product?.name }} - Quantity: {{ op.quantity }}</li>
+            </ul>
+          </td>
+          <td class="py-2 px-6 border-b border-gray-200">{{ order.orderDate }}</td>
+          <td class="py-2 px-6 border-b border-gray-200">{{ order.status }}</td>
+          <td class="py-2 px-6 border-b border-gray-200">{{ order.totalPrice | currency }}</td>
+          <td class="py-2 px-6 border-b border-gray-200">
+            <button (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600">Delete</button>
           </td>
         </tr>
         </tbody>

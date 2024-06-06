@@ -1,7 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+import {jwtDecode, JwtDecodeOptions} from 'jwt-decode';
 import { User } from '../models/user.model';
 
 @Injectable({
@@ -10,6 +10,7 @@ import { User } from '../models/user.model';
 export class AuthService {
   private baseUrl = 'http://localhost:8080/api/auth';
   private tokenKey = 'auth_token';
+  private userIdKey = 'user_id';
   authStatus = signal(false);
   isLoading = signal(true);
 
@@ -35,6 +36,8 @@ export class AuthService {
       const response = await axios.post<{ token: string }>(`${this.baseUrl}/login`, { email, password });
       if (response.data.token) {
         this.storeToken(response.data.token);
+        const decodedToken: any = jwtDecode(response.data.token);
+        localStorage.setItem(this.userIdKey, decodedToken.userId);
         this.authStatus.set(true);
         return response.data;
       } else {
@@ -72,6 +75,7 @@ export class AuthService {
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
+      localStorage.removeItem(this.userIdKey);
     }
     this.authStatus.set(false);
   }
@@ -102,6 +106,7 @@ export class AuthService {
 
   getAuthHeaders() {
     const token = this.getToken();
+    console.log('JWT Token sent with request:', token);  // Ajoutez cette ligne
     return {
       Authorization: `Bearer ${token}`
     };

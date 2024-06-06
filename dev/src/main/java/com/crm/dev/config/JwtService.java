@@ -7,75 +7,87 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
 
-@AllArgsConstructor
 @Service
 public class JwtService {
+    // Clé d'encryption doit être longue et sécurisée, ici juste pour exemple
     private final String EncryptionKey = "608f36e92dc66d933f06e6371493cb4fc05b1aa8f8de64014732472303a7c";
 
     @Autowired
     private UserRepository userRepository;
 
-    public Map<String, Object> generate(String email) {
+    public Map<String, Object> generate(String email, Long id, Collection<? extends GrantedAuthority> authorities) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-        return this.generateJwt(user.getEmail(), user.getFirstname());
+        // Passer l'ID de l'utilisateur à la méthode generateJwt
+        return generateJwt(user.getEmail(), user.getFirstname(), user.getId(), user.getAuthorities());
     }
 
-    public Map<String, Object> generateJwt(String email, String firstname) {
-        final long currentTime = System.currentTimeMillis();
-        final long expirationTime = currentTime + 30 * 60 * 1000; // 30 minutes
+    public Map<String, Object> generateJwt(String email, String firstname, Long userId, Collection<? extends GrantedAuthority> authorities) {
+        final long currentTimeMillis = System.currentTimeMillis();
+        final Date issuedAt = new Date(currentTimeMillis);
+        final Date expiration = new Date(currentTimeMillis + 30 * 60 * 1000); // Expiration après 30 minutes
 
-        final Map<String, Object> claims = Map.of(
-                "name", firstname,
-                "groupe", userRepository.findByEmail(email).get().getGroupe()
-        );
+        List<String> roles = authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
-        final String bearer = Jwts.builder()
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("name", firstname);
+        claims.put("userId", userId);  // Ajout de l'ID de l'utilisateur dans le token
+        claims.put("roles", roles);
+
+        String token = Jwts.builder()
                 .setClaims(claims)
-                .setSubject(email)
-                .setIssuedAt(new Date(currentTime))
-                .setExpiration(new Date(expirationTime))
-                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .setIssuedAt(issuedAt)
+                .setExpiration(expiration)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
-        return Map.of("token", bearer);
-    }
 
-    private Key getKey() {
-        final byte[] decoder = Decoders.BASE64.decode(EncryptionKey);
-        return Keys.hmacShaKeyFor(decoder);
-    }
-
-    public String loadUserFirstname(String token) {
-        return this.getClaim(token, Claims::getSubject);
+        return Map.of("token", token);
     }
 
     public boolean isTokenExpired(String token) {
-        Date expirationDate = this.getClaim(token, Claims::getExpiration);
-        return expirationDate.before(new Date());
+        return extractExpiration(token).before(new Date());
     }
 
     public String extractUsername(String token) {
-        return this.getClaim(token, Claims::getSubject);
+        return getClaimFromToken(token, Claims::getSubject);
     }
 
-    private <T> T getClaim(String token, Function<Claims, T> function) {
-        Claims claims = getAllClaims(token);
-        return function.apply(claims);
+    private Date extractExpiration(String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    private Claims getAllClaims(String token) {
+    Long extractUserId(String token) {
+        return getClaimFromToken(token, claims -> claims.get("userId", Long.class));
+    }
+
+    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(this.getKey())
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(EncryptionKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

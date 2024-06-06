@@ -1,27 +1,31 @@
 package com.crm.dev.service;
 
-import com.crm.dev.models.Order;
+import com.crm.dev.dto.OrderDTO;
+import com.crm.dev.dto.OrderProductDTO;
 import com.crm.dev.models.Customer;
+import com.crm.dev.models.Order;
+import com.crm.dev.models.OrderProduct;
 import com.crm.dev.models.Product;
 import com.crm.dev.repository.OrderRepository;
+import com.crm.dev.repository.CustomerRepository;
+import com.crm.dev.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
-
     @Autowired
     private OrderRepository orderRepository;
 
     @Autowired
-    private CustomerService customerService;
+    private CustomerRepository customerRepository;
 
     @Autowired
-    private ProductService productService;
+    private ProductRepository productRepository;
 
     public List<Order> findAllOrders() {
         return orderRepository.findAll();
@@ -31,27 +35,64 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
+    public List<Order> findOrdersByCustomerId(Long customerId) {
+        return orderRepository.findByCustomerId(customerId);
+    }
+
+    public Order createOrder(OrderDTO orderDTO) {
+        Order order = new Order();
+        Customer customer = customerRepository.findById(orderDTO.customerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        order.setCustomer(customer);
+        order.setOrderDate(orderDTO.orderDate());
+        order.setStatus(orderDTO.status());
+
+        List<OrderProduct> orderProducts = orderDTO.orderProducts().stream().map(opDTO -> {
+            OrderProduct orderProduct = new OrderProduct();
+            orderProduct.setOrder(order);
+            Product product = productRepository.findById(opDTO.productId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            orderProduct.setProduct(product);
+            orderProduct.setQuantity(opDTO.quantity());
+            return orderProduct;
+        }).collect(Collectors.toList());
+
+        order.setOrderProducts(orderProducts);
+        order.setTotalPrice(calculateTotalPrice(orderProducts));
+        return orderRepository.save(order);
+    }
+
+    public Order updateOrder(Long id, OrderDTO orderDTO) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        Customer customer = customerRepository.findById(orderDTO.customerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        order.setCustomer(customer);
+        order.setOrderDate(orderDTO.orderDate());
+        order.setStatus(orderDTO.status());
+
+        List<OrderProduct> orderProducts = orderDTO.orderProducts().stream().map(opDTO -> {
+            OrderProduct orderProduct = new OrderProduct();
+            orderProduct.setOrder(order);
+            Product product = productRepository.findById(opDTO.productId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            orderProduct.setProduct(product);
+            orderProduct.setQuantity(opDTO.quantity());
+            return orderProduct;
+        }).collect(Collectors.toList());
+
+        order.setOrderProducts(orderProducts);
+        order.setTotalPrice(calculateTotalPrice(orderProducts));
+        return orderRepository.save(order);
+    }
+
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);
     }
 
-    public Order createOrder(Order order) {
-        order.setTotalPrice(order.getProduct().getPrice() * order.getQuantity());
-        return orderRepository.save(order);
-    }
-
-    public Order updateOrder(Long orderId, Order orderDetails) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
-        order.setCustomer(orderDetails.getCustomer());
-        order.setProduct(orderDetails.getProduct());
-        order.setQuantity(orderDetails.getQuantity());
-        order.setOrderDate(orderDetails.getOrderDate());
-        order.setTotalPrice(orderDetails.getProduct().getPrice() * orderDetails.getQuantity());
-        return orderRepository.save(order);
-    }
-
-    public List<Order> findOrdersByCustomerId(Long customerId) {
-        return orderRepository.findByCustomerId(customerId);
+    private double calculateTotalPrice(List<OrderProduct> orderProducts) {
+        return orderProducts.stream()
+                .mapToDouble(op -> op.getProduct().getPrice() * op.getQuantity())
+                .sum();
     }
 }

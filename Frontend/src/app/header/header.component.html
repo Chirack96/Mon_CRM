@@ -2,14 +2,14 @@
   <div class="flex items-center space-x-4">
     <h1 class="text-white text-2xl font-bold">CRM Application</h1>
     <nav class="hidden md:flex space-x-4">
-      <button><a routerLink="/dashboard" class="bg-white text-blue-600 px-3 py-2 rounded">Dashboard</a></button>
-      <button><a routerLink="/customers" class="bg-white text-blue-600 px-3 py-2 rounded">Customers</a></button>
-      <button><a routerLink="/reports" class="bg-white text-blue-600 px-3 py-2 rounded">Reports</a></button>
-      <button><a routerLink="/settings" class="bg-white text-blue-600 px-3 py-2 rounded">Settings</a></button>
-      <button><a routerLink="/products" class="bg-white text-blue-600 px-3 py-2 rounded">Products</a></button>
-      <button><a routerLink="/orders" class="bg-white text-blue-600 px-3 py-2 rounded">Orders</a></button>
-      <button><a routerLink="/tickets" class="bg-white text-blue-600 px-3 py-2 rounded">Tickets</a></button>
-      <button><a routerLink="/users" class="bg-white text-blue-600 px-3 py-2 rounded">Users</a></button>
+      <button *ngIf="isLogged"><a routerLink="/dashboard" class="bg-white text-blue-600 px-3 py-2 rounded">Dashboard</a></button>
+      <button *ngIf="isLogged"><a routerLink="/customers" class="bg-white text-blue-600 px-3 py-2 rounded">Customers</a></button>
+      <button *ngIf="isLogged"><a routerLink="/reports" class="bg-white text-blue-600 px-3 py-2 rounded">Reports</a></button>
+      <button *ngIf="isLogged"><a routerLink="/settings" class="bg-white text-blue-600 px-3 py-2 rounded">Settings</a></button>
+      <button *ngIf="isLogged"><a routerLink="/products" class="bg-white text-blue-600 px-3 py-2 rounded">Products</a></button>
+      <button *ngIf="isLogged"><a routerLink="/orders" class="bg-white text-blue-600 px-3 py-2 rounded">Orders</a></button>
+      <button *ngIf="isLogged"><a routerLink="/tickets" class="bg-white text-blue-600 px-3 py-2 rounded">Tickets</a></button>
+      <button *ngIf="isLogged"><a routerLink="/users" class="bg-white text-blue-600 px-3 py-2 rounded">Users</a></button>
     </nav>
   </div>
   <div class="flex items-center space-x-4">

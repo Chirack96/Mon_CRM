@@ -37,4 +37,10 @@ public class CustomerController {
         customerService.deleteCustomer(id);
         return ResponseEntity.ok().build();
     }
+
+   @PostMapping("/create-multiple")
+    public ResponseEntity<List<Customer>> createMultipleCustomers(@RequestParam int count) {
+        List<Customer> customers = customerService.createMultipleCustomers(count);
+        return ResponseEntity.ok(customers);
+    }
 }

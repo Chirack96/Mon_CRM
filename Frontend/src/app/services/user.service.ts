@@ -25,6 +25,14 @@ export class UserService {
     return response.data;
   }
 
+  async getUserProfile(): Promise<User> {
+    const userId = localStorage.getItem('user_id'); // Récupérer l'ID de l'utilisateur
+    if (!userId) throw new Error('User ID is not available');
+    const response = await axios.get<User>(`${this.baseUrl}/${userId}`, {
+      headers: this.authService.getAuthHeaders()
+    });
+    return response.data;
+  }
   async createUser(user: User): Promise<User> {
     const response = await axios.post<User>(this.baseUrl, user, {
       headers: this.authService.getAuthHeaders()
