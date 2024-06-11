@@ -1,64 +1,105 @@
-<aside class="w-64 h-full bg-white shadow-md flex flex-col md:block hidden" id="sidebar">
-      <div class="flex-grow p-4 flex flex-col">
-        <nav>
-          <ul>
-            <li class="mb-4">
-              <a routerLink="/dashboard" class="flex items-center text-gray-700 hover:text-blue-500">
-                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h3.59a1 1 0 01.7.29l1.42 1.42a1 1 0 00.7.29H21a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V4z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h6"></path>
-                </svg>
-                Dashboard
-              </a>
-            </li>
-            <li class="mb-4">
-              <a routerLink="/tasks" class="flex items-center text-gray-700 hover:text-blue-500">
-                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                Tasks
-              </a>
-            </li>
-            <li class="mb-4">
-              <a routerLink="/contacts" class="flex items-center text-gray-700 hover:text-blue-500">
-                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M21 12a9 9 0 11-6.219-8.574M9 10h1v1H9z"></path>
-                </svg>
-                Contacts
-              </a>
-            </li>
-            <li class="mb-4">
-              <a routerLink="/reports" class="flex items-center text-gray-700 hover:text-blue-500">
-                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h4l3 8 4-16 3 12h4"></path>
-                </svg>
-                Reports
-              </a>
-            </li>
-            <li class="mb-4">
-              <a routerLink="/settings" class="flex items-center text-gray-700 hover:text-blue-500">
-                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.618V13.5a5.978 5.978 0 001.917-4.25A5.978 5.978 0 0018 5.25V4.382a2.032 2.032 0 01-.595-1.46L15 1.5h-3.816C9.578 1.5 7.5 3.578 7.5 6.184V8H6a2 2 0 00-2 2v10a2 2 0 002 2h9z"></path>
-                </svg>
-                Settings
-              </a>
-            </li>
-          </ul>
-        </nav>
-        <div class="mt-auto">
-          <a routerLink="/support" class="flex items-center text-gray-700 hover:text-blue-500">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<aside class="w-64 h-full bg-white shadow-lg rounded-lg overflow-y-auto" id="sidebar">
+  <div class="text-center p-4">
+    <div class="mb-4">
+      <img class="h-24 w-24 rounded-full mx-auto shadow-lg" ngSrc="./assets/pp.jpg" alt="User Profile Picture" height="800" width="800">
+      <h3 class="mt-2 font-bold text-lg">{{ user?.firstname }} {{ user?.lastname }}</h3>
+      <p class="text-lg opacity-75">{{ user?.groupe }}</p>
+    </div>
+  </div>
+
+  <div class="p-4">
+    <nav>
+      <ul class="space-y-4">
+        <li>
+          <a routerLink="/dashboard" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h3.59a1 1 0 01.7.29l1.42 1.42a1 1 0 00.7.29H21a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V4z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h6"></path>
+            </svg>
+            Dashboard
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/tasks" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            Tasks
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/user-logs" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17v2a1 1 0 001 1h16a1 1 0 001-1v-2M8 12h.01M12 12h.01M16 12h.01M9 16h6"></path>
+            </svg>
+            Logs
+          </a>
+
+        <li>
+          <a routerLink="/contacts" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M21 12a9 9 0 11-6.219-8.574M9 10h1v1H9z"></path>
+            </svg>
+            Contacts
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/reports" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h4l3 8 4-16 3 12h4"></path>
+            </svg>
+            Reports
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/settings" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.618V13.5a5.978 5.978 0 001.917-4.25A5.978 5.978 0 0018 5.25V4.382a2.032 2.032 0 01-.595-1.46L15 1.5h-3.816C9.578 1.5 7.5 3.578 7.5 6.184V8H6 a2 2 0 00-2 2v10a2 2 0 002 2h9z"></path>
+            </svg>
+            Settings
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/sales" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l-2.5 2.5L4 6v13h16V6l-2.5 2.5L15 6v13"></path>
+            </svg>
+            Sales
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/marketing" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.28 0-4-1.79-4-4s1.72-4 4-4 4 1.79 4 4-1.72 4-4 4zM6.93 9.14a9.055 9.055 0 00-2.26 2.98C3.58 14.27 3 16.24 3 18.5 3 19.88 3.22 21 3.54 22h16.92c.32-1 0.54-2.12 0.54-3.5 0-2.26-.58-4.23-1.67-6.38a9.032 9.032 0 00-2.26-2.98"></path>
+            </svg>
+            Marketing
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/human-resources" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.68 7.72l2.12-2.12a3 3 0 000-4.24l-1.42-1.42a3 3 0 00-4.24 0l-2.12 2.12m-4.24 13.44L7.05 19.5a3 3 0 010-4.24l-2.12-2.12a3 3 0 00-4.24 0L-0.71 14.66a3 3 0 000 4.24l2.12 2.12M7 17h.01M12 12h.01M15 17h.01M19 12h.01"></path>
+            </svg>
+            Human Resources
+          </a>
+        </li>
+
+        <li>
+          <a routerLink="/support" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17v2a1 1 0 001 1h16a1 1 0 001-1v-2M8 12h.01M12 12h.01M16 12h.01M9 16h6"></path>
             </svg>
             Support
           </a>
-        </div>
-      </div>
-    </aside>
-    <div class="flex-grow p-4">
-      <button class="md:hidden p-2 rounded bg-gray-800 text-white" id="sidebarToggle">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
-    </div>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>

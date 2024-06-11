@@ -16,11 +16,11 @@ import java.util.Date;
 @CrossOrigin(origins = "http://localhost:4200")
 public class CommentController {
 
-        @Autowired
-        private CommentService commentService;
+    @Autowired
+    private CommentService commentService;
 
-        @Autowired
-        private TaskRepository taskRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
     @PostMapping
     public ResponseEntity<?> addComment(@RequestBody Comment comment) {
@@ -46,4 +46,25 @@ public class CommentController {
         }
     }
 
+    @GetMapping("/{id}")
+    public Comment getCommentById(@PathVariable Long id) {
+        return commentService.getCommentById(id);
+
+    }
+
+    @PutMapping("/{id}")
+    public Comment updateComment(@PathVariable Long id, @RequestBody Comment comment) {
+        comment.setId(id);
+        return commentService.updateComment(comment);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteComment(@PathVariable Long id) {
+        commentService.deleteComment(id);
+    }
+
+    @GetMapping
+    public Iterable<Comment> getAllComments() {
+        return commentService.getAllComments();
+    }
 }

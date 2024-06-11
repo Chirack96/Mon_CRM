@@ -11,6 +11,7 @@ import {TicketsComponent} from "./tickets/tickets.components";
 import {UsersComponent} from "./users/users.component";
 import {AuthGuard} from "./auth.guard";
 import {TaskComponent} from "./task/task.component";
+import {UserLogsComponent} from "./user-logs/user-logs.component";
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'tickets', component: TicketsComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard]},
   { path: 'tasks', component: TaskComponent, canActivate: [AuthGuard]},
+  { path: 'user-logs', component: UserLogsComponent},
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard' }
 ];

@@ -9,8 +9,8 @@ export interface Order {
 }
 
 export interface OrderProduct {
-  productId: number; // For saving and retrieving orders
-  product?: Product; // For display purposes
+  productId: number;
+  product?: Product;
   quantity: number;
 }
 

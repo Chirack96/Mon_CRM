@@ -11,6 +11,7 @@ export class AuthService {
   private baseUrl = 'http://localhost:8080/api/auth';
   private tokenKey = 'auth_token';
   private userIdKey = 'user_id';
+  private verificationKey = 'verification_completed';
   authStatus = signal(false);
   isLoading = signal(true);
 
@@ -22,7 +23,15 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       const token = this.getToken();
       if (token && this.isTokenValid(token)) {
-        this.authStatus.set(true);
+        const decodedToken: any = jwtDecode(token);
+        const userId = decodedToken.userId;
+        const verificationCompleted = localStorage.getItem(`${this.verificationKey}_${userId}`) === 'true';
+
+        if (verificationCompleted) {
+          this.authStatus.set(true);
+        } else {
+          this.authStatus.set(false);
+        }
       } else {
         this.authStatus.set(false);
       }
@@ -30,18 +39,29 @@ export class AuthService {
     }
   }
 
-  async login(email: string, password: string): Promise<{ token: string }> {
+  async register(user: User): Promise<{ userId: number }> {
     this.isLoading.set(true);
     try {
-      const response = await axios.post<{ token: string }>(`${this.baseUrl}/login`, { email, password });
-      if (response.data.token) {
-        this.storeToken(response.data.token);
-        const decodedToken: any = jwtDecode(response.data.token);
-        localStorage.setItem(this.userIdKey, decodedToken.userId);
-        this.authStatus.set(true);
+      const response = await axios.post<{ userId: number }>(`${this.baseUrl}/register`, user);
+      return response.data;
+    } catch (error) {
+      console.error('Registration failed', error);
+      throw error;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async login(email: string, password: string): Promise<{ userId: number }> {
+    this.isLoading.set(true);
+    try {
+      const response = await axios.post<{ userId: number }>(`${this.baseUrl}/login`, { email, password });
+      if (response.data.userId) {
+        localStorage.setItem(this.userIdKey, response.data.userId.toString());
+        this.authStatus.set(false); // User is not fully authenticated yet
         return response.data;
       } else {
-        throw new Error('Token is missing in the response');
+        throw new Error('User ID is missing in the response');
       }
     } catch (error) {
       console.error('Login failed', error);
@@ -52,43 +72,38 @@ export class AuthService {
     }
   }
 
-  async register(user: User): Promise<{ token: string }> {
-    this.isLoading.set(true);
-    try {
-      const response = await axios.post<{ token: string }>(`${this.baseUrl}/register`, user);
-      if (response.data.token) {
-        this.storeToken(response.data.token);
-        this.authStatus.set(true);
-        return response.data;
-      } else {
-        throw new Error('Token is missing in the response');
-      }
-    } catch (error) {
-      console.error('Registration failed', error);
-      this.authStatus.set(false);
-      throw error;
-    } finally {
-      this.isLoading.set(false);
-    }
+  async verifyCode(userId: number, code: string): Promise<{ token: string }> {
+    const response = await axios.post<{ token: string }>(`${this.baseUrl}/verify-code`, { userId, code });
+    return response.data;
   }
 
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
       localStorage.removeItem(this.userIdKey);
+      localStorage.removeItem(`${this.verificationKey}_${this.getUserId()}`);
     }
     this.authStatus.set(false);
   }
 
-  private storeToken(token: string): void {
+  storeToken(token: string): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(this.tokenKey, token);
+      const decodedToken: any = jwtDecode(token);
+      localStorage.setItem(`${this.verificationKey}_${decodedToken.userId}`, 'true');
     }
   }
 
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
       return localStorage.getItem(this.tokenKey);
+    }
+    return null;
+  }
+
+  private getUserId(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem(this.userIdKey);
     }
     return null;
   }

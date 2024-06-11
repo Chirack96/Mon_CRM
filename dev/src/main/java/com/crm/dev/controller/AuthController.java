@@ -4,10 +4,11 @@ import com.crm.dev.config.JwtService;
 import com.crm.dev.dto.AuthentificationDTO;
 import com.crm.dev.dto.RegisterDTO;
 import com.crm.dev.models.User;
+import com.crm.dev.service.EmailService;
+import com.crm.dev.service.UserLogService;
+import com.crm.dev.service.VerificationCodeService;
 import com.crm.dev.repository.UserRepository;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,10 +28,11 @@ import java.util.Optional;
 @Validated
 public class AuthController {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
-
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private UserLogService userLogService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -41,11 +43,16 @@ public class AuthController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private VerificationCodeService verificationCodeService;
+
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
         Optional<User> existingUser = userRepository.findByEmail(registerDTO.email());
         if (existingUser.isPresent()) {
-            log.warn("User registration failed for email: {}", registerDTO.email());
             return ResponseEntity.status(400).body("User already exists");
         }
 
@@ -57,34 +64,53 @@ public class AuthController {
         newUser.setGroupe(registerDTO.groupe() != null ? registerDTO.groupe() : "");
         User registeredUser = userRepository.save(newUser);
 
-        log.info("User registered successfully with email: {}", registerDTO.email());
         return ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody AuthentificationDTO authentificationDTO) {
+    public ResponseEntity<?> login(@RequestBody AuthentificationDTO authentificationDTO) {
         try {
             Authentication authenticate = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authentificationDTO.email(), authentificationDTO.password())
             );
 
             if (authenticate.isAuthenticated()) {
-                // Utilisez le username pour récupérer l'utilisateur de la base de données
                 User user = userRepository.findByEmail(authentificationDTO.email())
                         .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + authentificationDTO.email()));
 
-                // Générer le token JWT en utilisant l'utilisateur trouvé
-                Map<String, Object> token = jwtService.generate(user.getEmail(), user.getId(), user.getAuthorities());
-                log.info("User authenticated successfully with email: {}", authentificationDTO.email());
-                return ResponseEntity.ok(token);
+                // Générer un code de vérification
+                String verificationCode = verificationCodeService.createVerificationCode(user);
+
+                // Envoyer le code de vérification par e-mail
+                emailService.sendVerificationEmail(user.getEmail(), verificationCode);
+
+                // Retourner une réponse nécessitant le code de vérification
+                return ResponseEntity.ok(Map.of("userId", user.getId(), "message", "Verification code sent. Please enter the code to complete login."));
             } else {
-                log.warn("Authentication failed for user: {}", authentificationDTO.email());
+                userLogService.logUserLogin(null, authentificationDTO.email(), "Login failed due to incorrect credentials");
                 return ResponseEntity.status(401).body("Authentication failed");
             }
         } catch (Exception e) {
-            log.error("Authentication error: {}", e.getMessage());
-            return ResponseEntity.status(401).body("Authentication error");
+            return ResponseEntity.status(401).body("Login error");
         }
     }
 
+    @PostMapping("/verify-code")
+    public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> payload) {
+        Long userId = Long.parseLong(payload.get("userId"));
+        String code = payload.get("code");
+
+        if (verificationCodeService.validateVerificationToken(userId, code)) {
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+            Map<String, Object> token = jwtService.generate(user.getEmail(), user.getId(), user.getAuthorities());
+
+            // Enregistrer le succès de la connexion
+            userLogService.logUserLogin(user.getId(), user.getEmail(), "Login successful");
+
+            return ResponseEntity.ok(token);
+        } else {
+            userLogService.logUserLogin(userId, "", "Login failed due to invalid or expired verification code");
+            return ResponseEntity.status(401).body("Invalid or expired verification code");
+        }
+    }
 }
