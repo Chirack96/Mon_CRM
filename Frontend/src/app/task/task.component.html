@@ -1,0 +1,155 @@
+<div class="task-container p-4 bg-gray-50 min-h-screen">
+  <h1 class="text-3xl font-bold mb-6 text-gray-700">Kanban Board</h1>
+
+  <div class="filters flex flex-col sm:flex-row gap-4 mb-6">
+    <input
+      type="text"
+      placeholder="Search tasks"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchTermChange()"
+      class="input border rounded p-2"
+    />
+    <select
+      [(ngModel)]="filterStatus"
+      (change)="onFilterStatusChange()"
+      class="select border rounded p-2"
+    >
+      <option value="all">All</option>
+      <option value="pending">Pending</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+    </select>
+    <select
+      [(ngModel)]="filterPriority"
+      (change)="onFilterPriorityChange()"
+      class="select border rounded p-2"
+    >
+      <option value="all">All</option>
+      <option value="high">High</option>
+      <option value="medium">Medium</option>
+      <option value="low">Low</option>
+    </select>
+  </div>
+
+  <button (click)="showCreateTaskForm = !showCreateTaskForm" class="btn mb-4 bg-blue-500 text-white py-2 px-4 rounded">
+    {{ showCreateTaskForm ? 'Cancel' : 'Create New Task' }}
+  </button>
+
+  <div *ngIf="showCreateTaskForm" class="task-create p-4 bg-white rounded-lg shadow mb-6">
+    <h2 class="text-xl font-bold mb-2">Create New Task</h2>
+    <form (ngSubmit)="createTask(newTaskForm.value); showCreateTaskForm = false" #newTaskForm="ngForm">
+      <div class="mb-2">
+        <label for="title" class="block mb-1 font-semibold">Title</label>
+        <input id="title" name="title" ngModel class="input border rounded p-2 w-full" required>
+      </div>
+      <div class="mb-2">
+        <label for="description" class="block mb-1 font-semibold">Description</label>
+        <textarea id="description" name="description" ngModel class="input border rounded p-2 w-full" required></textarea>
+      </div>
+      <div class="mb-2">
+        <label for="priority" class="block mb-1 font-semibold">Priority</label>
+        <select id="priority" name="priority" ngModel class="select border rounded p-2 w-full" required>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label for="assignee" class="block mb-1 font-semibold">Assignee</label>
+        <select id="assignee" name="assignee" ngModel class="select border rounded p-2 w-full" required>
+          <option *ngFor="let user of users" [value]="user.firstname + ' ' + user.lastname">{{ user.firstname }} {{ user.lastname }}</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label for="dueDate" class="block mb-1 font-semibold">Due Date</label>
+        <input id="dueDate" type="date" name="dueDate" ngModel class="input border rounded p-2 w-full" required>
+      </div>
+      <button type="submit" class="btn bg-green-500 text-white py-2 px-4 rounded">Create Task</button>
+    </form>
+  </div>
+
+  <div class="kanban-board grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <div
+      *ngFor="let status of ['pending', 'in-progress', 'completed']"
+      cdkDropList
+      [cdkDropListData]="getTasksByStatus(status)"
+      [cdkDropListConnectedTo]="['pending', 'in-progress', 'completed']"
+      (cdkDropListDropped)="onTaskDrop($event)"
+      [id]="status"
+      class="kanban-column p-4 rounded-lg shadow flex flex-col space-y-2 min-h-0"
+      [ngClass]="{
+        'bg-yellow-100': status === 'pending',
+        'bg-blue-100': status === 'in-progress',
+        'bg-green-100': status === 'completed'
+      }"
+    >
+      <h2 class="text-xl font-semibold mb-2">{{ status | titlecase }}</h2>
+      <div *ngFor="let task of getTasksByStatus(status)" cdkDrag>
+        <div
+          (click)="selectTask(task)"
+          class="p-4 bg-white rounded-lg shadow cursor-pointer border-l-4 flex flex-col justify-between"
+          [ngClass]="{
+            'border-yellow-500': task.priority === 'high',
+            'border-blue-500': task.priority === 'medium',
+            'border-green-500': task.priority === 'low'
+          }"
+        >
+          <div>
+            <h3 class="font-bold">{{ task.title }}</h3>
+            <p>{{ task.priority | titlecase }}</p>
+          </div>
+          <p class="text-sm text-gray-500 mt-2 self-end">Assigned to: {{ task.assignee }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="selectedTask" class="task-details p-4 bg-white rounded-lg shadow mb-4">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-bold">{{ selectedTask.title }}</h2>
+      <button (click)="deselectTask()" class="btn bg-red-500 text-white py-1 px-3 rounded">Close</button>
+    </div>
+    <p>{{ selectedTask.description }}</p>
+    <p><strong>Status:</strong> {{ selectedTask.status }}</p>
+    <p><strong>Priority:</strong> {{ selectedTask.priority }}</p>
+    <p><strong>Assigned to:</strong> {{ selectedTask.assignee }}</p>
+    <p><strong>Due date:</strong> {{ selectedTask.dueDate | date }}</p>
+
+    <div class="comments mb-4">
+      <h3 class="text-lg font-semibold">Comments</h3>
+      <ul class="list-disc list-inside mb-2">
+        <li
+          *ngFor="let comment of selectedTask.comments"
+          class="p-2 rounded mb-1"
+          [ngClass]="{ 'bg-gray-200': comment.author === currentUser?.firstname + ' ' + currentUser?.lastname }"
+        >
+          <strong>{{ comment.author }}:</strong> {{ comment.text }} <br>
+          <small>{{ comment.createdAt | date }}</small>
+        </li>
+      </ul>
+      <input
+        type="text"
+        [(ngModel)]="newCommentText"
+        placeholder="Add a comment"
+        class="input border rounded p-2 w-full mb-2"
+      />
+      <button (click)="addComment()" class="btn bg-blue-500 text-white py-2 px-4 rounded">Add Comment</button>
+    </div>
+
+    <div class="attachments mb-4">
+      <h3 class="text-lg font-semibold">Attachments</h3>
+      <ul class="list-disc list-inside mb-2">
+        <li *ngFor="let attachment of selectedTask.attachments">
+          <a [href]="attachment.fileUrl" class="text-blue-500">{{ attachment.filename }}</a>
+        </li>
+      </ul>
+      <input type="file" (change)="onFileSelected($event)" class="input border rounded p-2 w-full mb-2">
+      <button (click)="uploadAttachment()" class="btn bg-blue-500 text-white py-2 px-4 rounded">Upload Attachment</button>
+    </div>
+
+    <div class="actions mb-4 flex gap-4">
+      <button (click)="updateTask(selectedTask)" class="btn bg-green-500 text-white py-2 px-4 rounded">Update Task</button>
+      <button (click)="deleteTask(selectedTask.id)" class="btn bg-red-500 text-white py-2 px-4 rounded">Delete Task</button>
+    </div>
+  </div>
+</div>
