@@ -1,25 +1,22 @@
 package com.crm.dev.controller;
 
+import com.crm.dev.config.JwtService;
 import com.crm.dev.dto.AuthentificationDTO;
 import com.crm.dev.dto.RegisterDTO;
 import com.crm.dev.models.User;
 import com.crm.dev.repository.UserRepository;
-import com.crm.dev.config.JwtService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.validation.Valid;
 
 import java.util.Map;
 import java.util.Optional;

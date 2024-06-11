@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CustomerService } from '../services/customer.service';
 import { Customer } from '../models/customer.model';
-import {NgForOf, NgIf} from "@angular/common";
+import {DatePipe, NgForOf, NgIf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 
 @Component({
@@ -11,13 +11,14 @@ import {FormsModule} from "@angular/forms";
   imports: [
     NgForOf,
     FormsModule,
-    NgIf
+    NgIf,
+    DatePipe
   ],
   styleUrls: ['./customers.component.scss']
 })
 export class CustomersComponent implements OnInit {
   customers: Customer[] = [];
-  newCustomer: Customer = { id: 0, firstName: '', lastName: '', email: '', address: '', phoneNumber: '' };
+  newCustomer: Customer = { id: 0, firstName: '', lastName: '', email: '', address: '', phoneNumber: '', createdAt: '' };
   showAddCustomerForm: boolean = false;
 
   constructor(private customerService: CustomerService) { }
@@ -38,7 +39,7 @@ export class CustomersComponent implements OnInit {
     try {
       const createdCustomer = await this.customerService.createCustomer(this.newCustomer);
       this.customers.push(createdCustomer);
-      this.newCustomer = { id: 0, firstName: '', lastName: '', email: '', address: '', phoneNumber: '' }; // Réinitialiser le formulaire
+      this.newCustomer = { id: 0, firstName: '', lastName: '', email: '', address: '', phoneNumber: '', createdAt: '' }; // Réinitialiser le formulaire
       this.showAddCustomerForm = false; // Masquer le formulaire après la création du client
     } catch (error) {
       console.error('Error creating customer', error);
@@ -52,5 +53,9 @@ export class CustomersComponent implements OnInit {
     } catch (error) {
       console.error('Error deleting customer', error);
     }
+  }
+
+  getInitials(firstName: string, lastName: string): string {
+    return `${firstName.charAt(0).toUpperCase()}${lastName.charAt(0).toUpperCase()}`;
   }
 }

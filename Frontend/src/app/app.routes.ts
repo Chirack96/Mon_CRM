@@ -9,23 +9,21 @@ import {ProductsComponent} from "./products/products.component";
 import {OrdersComponent} from "./orders/orders.component";
 import {TicketsComponent} from "./tickets/tickets.components";
 import {UsersComponent} from "./users/users.component";
-import {HomeComponent} from "./home/home.component";
+import {AuthGuard} from "./auth.guard";
+import {TaskComponent} from "./task/task.component";
 
 export const routes: Routes = [
-      { path: 'login', component: LoginComponent},
-      { path: 'register', component: RegisterComponent},
-      { path: 'dashboard' , component: DashboardComponent},
-      {path: 'customers' , component: CustomersComponent},
-      {path: 'reports' , component: ReportsComponent},
-      {path: 'settings' , component: SettingsComponent},
-      {path: 'products' , component: ProductsComponent},
-      {path: 'orders' , component: OrdersComponent},
-      {path: 'tickets' , component: TicketsComponent},
-      {path: 'users' , component: UsersComponent},
-  {path: 'homes' , component: HomeComponent},
-      { path: 'home', redirectTo: '/dashboard', pathMatch: 'full' },
-      { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-
-
-
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'customers', component: CustomersComponent, canActivate: [AuthGuard] },
+  { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard] },
+  { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
+  { path: 'products', component: ProductsComponent, canActivate: [AuthGuard] },
+  { path: 'orders', component: OrdersComponent, canActivate: [AuthGuard]},
+  { path: 'tickets', component: TicketsComponent, canActivate: [AuthGuard] },
+  { path: 'users', component: UsersComponent, canActivate: [AuthGuard]},
+  { path: 'tasks', component: TaskComponent, canActivate: [AuthGuard]},
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: '/dashboard' }
 ];

@@ -2,24 +2,24 @@
   <div class="p-4 rounded-lg dark:border-gray-700">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
       <div class="p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700">Total Sales</h2>
-        <p class="mt-2 text-3xl font-bold text-gray-900">$12,345</p>
+        <h2 class="text-lg font-semi bold text-gray-700">Total Sales</h2>
+        <p class="mt-2 text-3xl font-bold text-gray-900">${{ totalSales }}</p>
       </div>
       <div class="p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700">New Customers</h2>
-        <p class="mt-2 text-3xl font-bold text-gray-900">345</p>
+        <h2 class="text-lg font-semi bold text-gray-700">New Customers</h2>
+        <p class="mt-2 text-3xl font-bold text-gray-900">{{ newCustomers }}</p>
       </div>
       <div class="p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700">Total Orders</h2>
-        <p class="mt-2 text-3xl font-bold text-gray-900">1,234</p>
+        <h2 class="text-lg font-semi bold text-gray-700">Total Orders</h2>
+        <p class="mt-2 text-3xl font-bold text-gray-900">{{ totalOrders }}</p>
       </div>
       <div class="p-6 bg-white rounded-lg shadow-md">
-        <h2 class="text-lg font-semibold text-gray-700">Pending Tasks</h2>
-        <p class="mt-2 text-3xl font-bold text-gray-900">5</p>
+        <h2 class="text-lg font-semi bold text-gray-700">Pending Tasks</h2>
+        <p class="mt-2 text-3xl font-bold text-gray-900">{{ pendingTasks }}</p>
       </div>
     </div>
     <div class="p-6 bg-white rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold text-gray-700">Sales Overview</h2>
+      <h2 class="text-lg font-semi bold text-gray-700">Sales Overview</h2>
       <canvas id="salesChart"></canvas>
     </div>
   </div>

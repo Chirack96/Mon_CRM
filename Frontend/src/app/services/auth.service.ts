@@ -1,7 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import axios from 'axios';
-import {jwtDecode, JwtDecodeOptions} from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { User } from '../models/user.model';
 
 @Injectable({
@@ -106,7 +106,7 @@ export class AuthService {
 
   getAuthHeaders() {
     const token = this.getToken();
-    console.log('JWT Token sent with request:', token);  // Ajoutez cette ligne
+    console.log('JWT Token sent with request:', token);
     return {
       Authorization: `Bearer ${token}`
     };

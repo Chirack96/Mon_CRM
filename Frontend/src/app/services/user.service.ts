@@ -52,26 +52,4 @@ export class UserService {
       headers: this.authService.getAuthHeaders()
     });
   }
-
-  async deleteUsersInRange(startId: number, endId: number): Promise<void> {
-    await axios.delete(`${this.baseUrl}/delete/range`, {
-      params: { startId, endId },
-      headers: this.authService.getAuthHeaders()
-    });
-  }
-
-  async createMultipleUsers(count: number): Promise<User[]> {
-    const response = await axios.post<User[]>(`${this.baseUrl}/create-multiple`, null, {
-      params: { count },
-      headers: this.authService.getAuthHeaders()
-    });
-    return response.data;
-  }
-
-  async getUserByGroupe(groupe: string): Promise<User> {
-    const response = await axios.get<User>(`${this.baseUrl}/groupe/${groupe}`, {
-      headers: this.authService.getAuthHeaders()
-    });
-    return response.data;
-  }
 }

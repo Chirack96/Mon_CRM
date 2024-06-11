@@ -29,7 +29,7 @@ public class JwtService {
 
     public Map<String, Object> generate(String email, Long id, Collection<? extends GrantedAuthority> authorities) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-        // Passer l'ID de l'utilisateur à la méthode generateJwt
+        // Passage l'ID de l'utilisateur à la méthode generateJwt
         return generateJwt(user.getEmail(), user.getFirstname(), user.getId(), user.getAuthorities());
     }
 

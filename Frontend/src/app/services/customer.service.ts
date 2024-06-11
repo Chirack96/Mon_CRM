@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { Customer } from '../models/customer.model';
 import { AuthService } from './auth.service';
+import {Order} from "../models/order.model";
 
 @Injectable({
   providedIn: 'root'
@@ -36,5 +37,18 @@ export class CustomerService {
     await axios.delete(`${this.baseUrl}/${id}`, {
       headers: this.authService.getAuthHeaders()
     });
+  }
+
+  async updateCustomer(customer: Customer): Promise<Customer> {
+    const response = await axios.put<Customer>(`${this.baseUrl}/${customer.id}`, customer, {
+      headers: this.authService.getAuthHeaders()
+    });
+    return response.data;
+  }
+  async getCustomerOrders(id: number): Promise<Order[]> {
+    const response = await axios.get<Order[]>(`${this.baseUrl}/${id}/orders`, {
+      headers: this.authService.getAuthHeaders()
+    });
+    return response.data;
   }
 }

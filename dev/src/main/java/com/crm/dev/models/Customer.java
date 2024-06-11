@@ -1,18 +1,16 @@
 package com.crm.dev.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @Setter
 @Getter
 @Entity
 @Table(name = "customers")
 public class Customer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,4 +29,7 @@ public class Customer {
 
     @Column(nullable = false)
     private String phoneNumber;
+
+    @Column(nullable = false)
+    private LocalDate createdAt;
 }

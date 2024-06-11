@@ -1,7 +1,6 @@
 package com.crm.dev.service;
 
 import com.crm.dev.dto.OrderDTO;
-import com.crm.dev.dto.OrderProductDTO;
 import com.crm.dev.models.Customer;
 import com.crm.dev.models.Order;
 import com.crm.dev.models.OrderProduct;
@@ -90,9 +89,21 @@ public class OrderService {
         orderRepository.deleteById(id);
     }
 
+    public Order updateOrderStatus(Long id, String status) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setStatus(status);
+        System.out.println("Updating order " + id + " status to " + status); // Log
+        return orderRepository.save(order);
+    }
+
     private double calculateTotalPrice(List<OrderProduct> orderProducts) {
         return orderProducts.stream()
                 .mapToDouble(op -> op.getProduct().getPrice() * op.getQuantity())
                 .sum();
+    }
+
+    public List<Order> findOrdersByStatus(String status) {
+        return orderRepository.findByStatus(status);
     }
 }

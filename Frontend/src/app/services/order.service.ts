@@ -45,4 +45,40 @@ export class OrderService {
       throw error;
     }
   }
+
+  async updateOrderStatus(id: number, status: string): Promise<Order> {
+    try {
+      const response = await axios.put<Order>(`${this.baseUrl}/${id}/status`, { status }, {
+        headers: this.authService.getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update order status:', error);
+      throw error;
+    }
+  }
+
+  async updateOrder(id: number, order: Order): Promise<Order> {
+    try {
+      const response = await axios.put<Order>(`${this.baseUrl}/${id}`, order, {
+        headers: this.authService.getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update order:', error);
+      throw error;
+    }
+  }
+
+  async getOrderByStatus(status: string): Promise<Order[]> {
+    try {
+      const response = await axios.get<Order[]>(`${this.baseUrl}/status/${status}`, {
+        headers: this.authService.getAuthHeaders()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch orders by status:', error);
+      throw error;
+    }
+  }
 }

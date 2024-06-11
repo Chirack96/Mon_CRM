@@ -1,18 +1,15 @@
 package com.crm.dev.controller;
 
 import com.crm.dev.dto.OrderDTO;
-import com.crm.dev.dto.OrderProductDTO;
 import com.crm.dev.models.Order;
-import com.crm.dev.models.OrderProduct;
 import com.crm.dev.service.OrderService;
-import com.crm.dev.service.CustomerService;
-import com.crm.dev.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -21,12 +18,6 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private CustomerService customerService;
-
-    @Autowired
-    private ProductService productService;
 
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {
@@ -62,5 +53,19 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestBody Map<String, String> updates) {
+        String status = updates.get("status");
+        System.out.println("Received PUT request to update order " + id + " with status " + status); // Log
+        Order updatedOrder = orderService.updateOrderStatus(id, status);
+        return ResponseEntity.ok(updatedOrder);
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Order>> getOrdersByStatus(@PathVariable String status) {
+        List<Order> orders = orderService.findOrdersByStatus(status);
+        return ResponseEntity.ok(orders);
     }
 }

@@ -4,7 +4,7 @@ import { OrderService } from '../services/order.service';
 import { CustomerService } from '../services/customer.service';
 import { ProductService } from '../services/product.service';
 import { Customer, Product, Order } from '../models/order.model';
-import {CurrencyPipe, NgForOf, NgIf} from "@angular/common";
+import { CurrencyPipe, NgClass, NgForOf, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-orders',
@@ -15,7 +15,8 @@ import {CurrencyPipe, NgForOf, NgIf} from "@angular/common";
     ReactiveFormsModule,
     CurrencyPipe,
     NgForOf,
-    NgIf
+    NgIf,
+    NgClass
   ]
 })
 export class OrdersComponent implements OnInit {
@@ -24,6 +25,7 @@ export class OrdersComponent implements OnInit {
   products: Product[] = [];
   orderForm: FormGroup;
   showAddOrderForm = false;
+  currentTable: string = 'all';
 
   constructor(
     private orderService: OrderService,
@@ -41,7 +43,7 @@ export class OrdersComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchInitialData();
-    this.addOrderProduct(); // Setup an initial product line
+    this.resetOrderForm();
   }
 
   get orderProducts() {
@@ -57,6 +59,16 @@ export class OrdersComponent implements OnInit {
 
   removeOrderProduct(index: number) {
     this.orderProducts.removeAt(index);
+  }
+
+  resetOrderForm() {
+    this.orderForm.reset({
+      customerId: '',
+      orderDate: '',
+      status: ''
+    });
+    this.orderProducts.clear();
+    this.addOrderProduct();
   }
 
   async fetchInitialData() {
@@ -85,17 +97,29 @@ export class OrdersComponent implements OnInit {
         productId: op.productId,
         quantity: op.quantity
       })),
-      totalPrice: 0 // Assume total price is calculated server-side
+      totalPrice: 0 // Calculated on the server
     };
 
     try {
       const createdOrder = await this.orderService.createOrder(newOrder);
       this.orders.push(createdOrder);
-      this.orderForm.reset();
-      this.addOrderProduct(); // Add a new product row after reset
+      this.resetOrderForm(); // Reset the form after creating an order
       this.showAddOrderForm = false;
     } catch (error) {
       console.error('Error creating order:', error);
+    }
+  }
+
+  async updateOrderStatus(id: number, status: string) {
+    try {
+      console.log(`Updating order ${id} status to ${status}`);
+      const order = this.orders.find(order => order.id === id);
+      if (order) {
+        order.status = status;
+        await this.orderService.updateOrderStatus(id, status);
+      }
+    } catch (error) {
+      console.error(`Error updating order status to ${status}:`, error);
     }
   }
 

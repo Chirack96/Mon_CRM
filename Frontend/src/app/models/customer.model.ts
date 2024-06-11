@@ -5,4 +5,5 @@ export interface Customer {
   email: string;
   address: string;
   phoneNumber: string;
+  createdAt: string;
 }

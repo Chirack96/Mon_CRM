@@ -1,7 +1,6 @@
 package com.crm.dev.config;
 
 import com.crm.dev.service.UserService;
-import com.crm.dev.config.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
