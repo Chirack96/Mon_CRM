@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import axios from 'axios';
 import { User } from '../models/user.model';
 import { AuthService } from './auth.service';
@@ -9,7 +10,7 @@ import { AuthService } from './auth.service';
 export class UserService {
   private baseUrl = 'http://localhost:8080/api/users';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, @Inject(PLATFORM_ID) private platformId: Object) {}
 
   async getUsers(): Promise<User[]> {
     const response = await axios.get<User[]>(`${this.baseUrl}`, {
@@ -26,13 +27,18 @@ export class UserService {
   }
 
   async getUserProfile(): Promise<User> {
-    const userId = localStorage.getItem('user_id'); // Récupérer l'ID de l'utilisateur
-    if (!userId) throw new Error('User ID is not available');
-    const response = await axios.get<User>(`${this.baseUrl}/${userId}`, {
-      headers: this.authService.getAuthHeaders()
-    });
-    return response.data;
+    if (isPlatformBrowser(this.platformId)) {
+      const userId = localStorage.getItem('user_id');
+      if (!userId) throw new Error('User ID is not available');
+      const response = await axios.get<User>(`${this.baseUrl}/${userId}`, {
+        headers: this.authService.getAuthHeaders()
+      });
+      return response.data;
+    } else {
+      throw new Error('localStorage is not available');
+    }
   }
+
   async createUser(user: User): Promise<User> {
     const response = await axios.post<User>(this.baseUrl, user, {
       headers: this.authService.getAuthHeaders()

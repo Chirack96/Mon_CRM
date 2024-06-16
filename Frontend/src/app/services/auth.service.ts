@@ -1,7 +1,8 @@
-import { Injectable, Inject, PLATFORM_ID, signal } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';  // Assurez-vous que jwt-decode est installé et importé correctement
+import { BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
 
 @Injectable({
@@ -12,8 +13,13 @@ export class AuthService {
   private tokenKey = 'auth_token';
   private userIdKey = 'user_id';
   private verificationKey = 'verification_completed';
-  authStatus = signal(false);
-  isLoading = signal(true);
+
+  // BehaviorSubjects pour maintenir l'état actuel de l'authentification et du chargement
+  private authStatusSource = new BehaviorSubject<boolean>(false);
+  public authStatus = this.authStatusSource.asObservable();
+
+  private isLoadingSource = new BehaviorSubject<boolean>(false);
+  public isLoading = this.isLoadingSource.asObservable();
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.checkInitialLoginState();
@@ -26,55 +32,59 @@ export class AuthService {
         const decodedToken: any = jwtDecode(token);
         const userId = decodedToken.userId;
         const verificationCompleted = localStorage.getItem(`${this.verificationKey}_${userId}`) === 'true';
-
-        if (verificationCompleted) {
-          this.authStatus.set(true);
-        } else {
-          this.authStatus.set(false);
-        }
+        this.authStatusSource.next(verificationCompleted);
       } else {
-        this.authStatus.set(false);
+        this.authStatusSource.next(false);
       }
-      this.isLoading.set(false);
+      this.isLoadingSource.next(false);
     }
   }
 
-  async register(user: User): Promise<{ userId: number }> {
-    this.isLoading.set(true);
+  async register(user: User): Promise<{ userId: number } | null> {
+    this.isLoadingSource.next(true);
     try {
       const response = await axios.post<{ userId: number }>(`${this.baseUrl}/register`, user);
       return response.data;
     } catch (error) {
       console.error('Registration failed', error);
-      throw error;
+      return null;
     } finally {
-      this.isLoading.set(false);
+      this.isLoadingSource.next(false);
     }
   }
 
-  async login(email: string, password: string): Promise<{ userId: number }> {
-    this.isLoading.set(true);
+  async login(email: string, password: string): Promise<{ userId: number } | null> {
+    this.isLoadingSource.next(true);
     try {
       const response = await axios.post<{ userId: number }>(`${this.baseUrl}/login`, { email, password });
       if (response.data.userId) {
         localStorage.setItem(this.userIdKey, response.data.userId.toString());
-        this.authStatus.set(false); // User is not fully authenticated yet
+        this.authStatusSource.next(false); // User is logged in but not verified yet
         return response.data;
       } else {
-        throw new Error('User ID is missing in the response');
+        console.error('User ID is missing in the response');
+        return null;
       }
     } catch (error) {
       console.error('Login failed', error);
-      this.authStatus.set(false);
-      throw error;
+      this.authStatusSource.next(false);
+      return null;
     } finally {
-      this.isLoading.set(false);
+      this.isLoadingSource.next(false);
     }
   }
 
-  async verifyCode(userId: number, code: string): Promise<{ token: string }> {
-    const response = await axios.post<{ token: string }>(`${this.baseUrl}/verify-code`, { userId, code });
-    return response.data;
+  async verifyCode(userId: number, code: string): Promise<{ token: string } | null> {
+    try {
+      const response = await axios.post<{ token: string }>(`${this.baseUrl}/verify-code`, { userId, code });
+      this.storeToken(response.data.token);
+      this.authStatusSource.next(true);
+      return response.data;
+    } catch (error) {
+      console.error('Verification failed', error);
+      this.authStatusSource.next(false);
+      return null;
+    }
   }
 
   logout(): void {
@@ -82,8 +92,8 @@ export class AuthService {
       localStorage.removeItem(this.tokenKey);
       localStorage.removeItem(this.userIdKey);
       localStorage.removeItem(`${this.verificationKey}_${this.getUserId()}`);
+      this.authStatusSource.next(false);
     }
-    this.authStatus.set(false);
   }
 
   storeToken(token: string): void {
@@ -91,6 +101,7 @@ export class AuthService {
       localStorage.setItem(this.tokenKey, token);
       const decodedToken: any = jwtDecode(token);
       localStorage.setItem(`${this.verificationKey}_${decodedToken.userId}`, 'true');
+      this.authStatusSource.next(true);
     }
   }
 
@@ -117,6 +128,10 @@ export class AuthService {
       console.error('Token validation failed:', e);
       return false;
     }
+  }
+
+  setAuthStatus(status: boolean): void {
+    this.authStatusSource.next(status);
   }
 
   getAuthHeaders() {
