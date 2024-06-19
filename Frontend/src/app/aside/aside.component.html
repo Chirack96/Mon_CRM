@@ -1,7 +1,7 @@
 <aside class="w-64 h-full bg-white shadow-lg rounded-lg overflow-y-auto" id="sidebar">
   <div class="text-center p-4">
     <div class="mb-4">
-      <img class="h-24 w-24 rounded-full mx-auto shadow-lg" ngSrc="./assets/pp.jpg" alt="User Profile Picture" height="800" width="800">
+      <img class="h-24 w-24 rounded-full mx-auto shadow-lg" [src]="getUserImage()" alt="User Profile Picture" height="800" width="800">
       <h3 class="mt-2 font-bold text-lg">{{ user?.firstname }} {{ user?.lastname }}</h3>
       <p class="text-lg opacity-75">{{ user?.groupe }}</p>
     </div>
@@ -36,6 +36,7 @@
             </svg>
             Logs
           </a>
+        </li>
 
         <li>
           <a routerLink="/contacts" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">

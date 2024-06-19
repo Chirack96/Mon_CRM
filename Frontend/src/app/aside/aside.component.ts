@@ -19,11 +19,12 @@ import { AuthService } from '../services/auth.service';
     NgIf
   ],
   templateUrl: './aside.component.html',
-  styleUrl: './aside.component.scss'
+  styleUrls: ['./aside.component.scss']
 })
 export class AsideComponent implements OnInit {
-  user: User | undefined;
+  user: User | undefined = undefined; // Initialisation à undefined
   isLoggedIn = false;
+  defaultImage = 'https://img.freepik.com/photos-gratuite/portrait-jeune-homme-affaires-moustache-lunettes-rendu-3d_1142-51509.jpg?w=740&t=st=1718797177~exp=1718797777~hmac=b22839f330ca8ff8233e9daecd29bfafccb0a3788f670be5a1bb938798e18db1';
 
   constructor(private userService: UserService, private authService: AuthService) {}
 
@@ -42,5 +43,12 @@ export class AsideComponent implements OnInit {
     }).catch(error => {
       console.error('Failed to load user data', error);
     });
+  }
+
+  getUserImage(): string {
+    if (this.user && this.user.image) {
+      return this.user.image;
+    }
+    return this.defaultImage;
   }
 }

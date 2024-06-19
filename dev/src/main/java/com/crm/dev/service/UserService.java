@@ -5,7 +5,6 @@ import com.crm.dev.models.User;
 import com.crm.dev.repository.RoleRepository;
 import com.crm.dev.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,6 +58,7 @@ public class UserService implements UserDetailsService {
             user.setEmail("jean.duponyt" + i + "@example.com");
             user.setPassword(bCryptPasswordEncoder.encode("mypassword" + i));
             user.setGroupe("Employee");
+            user.setImage("https://example.com/image" + i + ".png");
             users.add(userRepository.save(user));
         }
         return users;
@@ -101,4 +100,5 @@ public class UserService implements UserDetailsService {
         user.getRoles().add(role);
         userRepository.save(user);
     }
+
 }

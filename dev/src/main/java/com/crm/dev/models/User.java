@@ -35,6 +35,9 @@ public class User implements UserDetails {
     @Column
     private String groupe;
 
+    @Column
+    private String image;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

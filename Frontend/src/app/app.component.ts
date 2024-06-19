@@ -5,7 +5,7 @@ import { FooterComponent } from './footer/footer.component';
 import { AuthService } from './services/auth.service';
 import { AsideComponent } from './aside/aside.component';
 import { HomeComponent } from "./home/home.component";
-import {AsyncPipe, NgIf} from "@angular/common";
+import { AsyncPipe, NgIf } from "@angular/common";
 import { Observable } from 'rxjs';
 
 @Component({
@@ -17,14 +17,15 @@ import { Observable } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   isLoggedIn$: Observable<boolean>;
+  isLoading$: Observable<boolean>;
 
   constructor(private authService: AuthService) {
-    // Utilisez un observable pour réagir aux changements de l'état d'authentification.
     this.isLoggedIn$ = this.authService.authStatus;
+    this.isLoading$ = this.authService.isLoading;
   }
 
   ngOnInit(): void {
-    // Initialise l'état de connexion à partir de la session existante si applicable
-    this.authService.checkInitialLoginState();
+    this.authService.initializeLoginState().then(r => r);
+    console.log('AppComponent initialized');
   }
 }

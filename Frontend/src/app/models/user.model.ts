@@ -5,6 +5,7 @@ export class User {
   email: string;
   password: string;
   groupe: string;
+  image?: string;
 
   constructor(
     id: number = 0,

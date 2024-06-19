@@ -22,7 +22,7 @@ export class LoginComponent {
   loginStage = 1;  // 1 pour les identifiants, 2 pour le code de vérification
   errorMessage: string | null = null;
   successMessage: string | null = null;
-  showPassword = false; // Ajout de cette ligne
+  showPassword = false;
 
   @ViewChild('passwordField') passwordField!: ElementRef;
 
@@ -51,10 +51,8 @@ export class LoginComponent {
     this.clearMessages();
     if (this.userId && this.verificationCode) {
       try {
-        const result = await this.authService.verifyCode(this.userId, this.verificationCode);
-        if (result) {
-          this.authService.storeToken(result.token);
-          this.authService.setAuthStatus(true);
+        const success = await this.authService.verifyCode(this.userId, this.verificationCode);
+        if (success) {
           this.successMessage = 'You are successfully logged in. Redirecting to dashboard...';
           await this.router.navigate(['/dashboard']);
         } else {

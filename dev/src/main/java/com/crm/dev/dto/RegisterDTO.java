@@ -8,5 +8,6 @@ public record RegisterDTO(
         @NotBlank String password,
         @NotBlank String firstname,
         @NotBlank String lastname,
-        String groupe) {
+        String groupe,
+        String image) {
 }

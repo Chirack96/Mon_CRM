@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
-import { AuthService } from './auth.service';
 import { Order } from '../models/order.model';
 
 @Injectable({
@@ -9,12 +8,12 @@ import { Order } from '../models/order.model';
 export class OrderService {
   private baseUrl = 'http://localhost:8080/api/orders';
 
-  constructor(private authService: AuthService) {}
+  constructor() {}
 
   async getAllOrders(): Promise<Order[]> {
     try {
       const response = await axios.get<Order[]>(this.baseUrl, {
-        headers: this.authService.getAuthHeaders()
+        withCredentials: true
       });
       return response.data;
     } catch (error) {
@@ -26,7 +25,7 @@ export class OrderService {
   async createOrder(order: Order): Promise<Order> {
     try {
       const response = await axios.post<Order>(this.baseUrl, order, {
-        headers: this.authService.getAuthHeaders()
+        withCredentials: true
       });
       return response.data;
     } catch (error) {
@@ -38,7 +37,7 @@ export class OrderService {
   async deleteOrder(id: number): Promise<void> {
     try {
       await axios.delete(`${this.baseUrl}/${id}`, {
-        headers: this.authService.getAuthHeaders()
+        withCredentials: true
       });
     } catch (error) {
       console.error('Failed to delete order:', error);
@@ -49,7 +48,7 @@ export class OrderService {
   async updateOrderStatus(id: number, status: string): Promise<Order> {
     try {
       const response = await axios.put<Order>(`${this.baseUrl}/${id}/status`, { status }, {
-        headers: this.authService.getAuthHeaders()
+        withCredentials: true
       });
       return response.data;
     } catch (error) {
@@ -61,7 +60,7 @@ export class OrderService {
   async updateOrder(id: number, order: Order): Promise<Order> {
     try {
       const response = await axios.put<Order>(`${this.baseUrl}/${id}`, order, {
-        headers: this.authService.getAuthHeaders()
+        withCredentials: true
       });
       return response.data;
     } catch (error) {
@@ -73,7 +72,7 @@ export class OrderService {
   async getOrderByStatus(status: string): Promise<Order[]> {
     try {
       const response = await axios.get<Order[]>(`${this.baseUrl}/status/${status}`, {
-        headers: this.authService.getAuthHeaders()
+        withCredentials: true
       });
       return response.data;
     } catch (error) {
