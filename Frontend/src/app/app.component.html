@@ -1,8 +1,13 @@
-<div class="flex flex-col min-h-screen">
+<div class="flex flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-500">
   <app-header></app-header>
+  <div class="flex justify-end p-4">
+    <button (click)="toggleDarkMode()" class="btn bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-2 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
+      <i [ngClass]="darkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
+    </button>
+  </div>
   <div class="flex flex-grow">
     <app-aside *ngIf="isLoggedIn$ | async"></app-aside>
-    <div class="flex-grow p-4">
+    <div class="flex-grow p-4 bg-white dark:bg-gray-900 transition-colors duration-500">
       <router-outlet></router-outlet>
     </div>
   </div>

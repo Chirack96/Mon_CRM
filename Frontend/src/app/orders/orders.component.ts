@@ -5,6 +5,7 @@ import { CustomerService } from '../services/customer.service';
 import { ProductService } from '../services/product.service';
 import { Customer, Product, Order } from '../models/order.model';
 import { CurrencyPipe, NgClass, NgForOf, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // Ajoutez FormsModule pour utiliser ngModel
 
 @Component({
   selector: 'app-orders',
@@ -16,16 +17,22 @@ import { CurrencyPipe, NgClass, NgForOf, NgIf } from '@angular/common';
     CurrencyPipe,
     NgForOf,
     NgIf,
-    NgClass
+    NgClass,
+    FormsModule // Ajoutez FormsModule ici
   ]
 })
 export class OrdersComponent implements OnInit {
   orders: Order[] = [];
   customers: Customer[] = [];
   products: Product[] = [];
+  allOrders: Order[] = []; // Ajoutez cette ligne pour stocker toutes les commandes initialement
   orderForm: FormGroup;
+  editOrderForm: FormGroup; // Ajoutez cette ligne
   showAddOrderForm = false;
+  showEditModal = false; // Ajoutez cette ligne
   currentTable: string = 'all';
+  searchQuery: string = ''; // Ajoutez cette ligne
+  noResultsMessage: string = ''; // Ajoutez cette ligne pour afficher un message en cas de non-résultats
 
   constructor(
     private orderService: OrderService,
@@ -39,15 +46,27 @@ export class OrdersComponent implements OnInit {
       orderDate: ['', Validators.required],
       status: ['', Validators.required]
     });
+
+    this.editOrderForm = this.fb.group({ // Ajoutez cette ligne
+      id: [''],
+      customerId: ['', Validators.required],
+      orderProducts: this.fb.array([]),
+      orderDate: ['', Validators.required],
+      status: ['', Validators.required]
+    });
   }
 
   ngOnInit(): void {
-    this.fetchInitialData();
+    this.fetchInitialData().then(r => console.log('Initial data loaded'));
     this.resetOrderForm();
   }
 
   get orderProducts() {
     return this.orderForm.get('orderProducts') as FormArray;
+  }
+
+  get editOrderProducts() {
+    return this.editOrderForm.get('orderProducts') as FormArray;
   }
 
   addOrderProduct() {
@@ -76,6 +95,7 @@ export class OrdersComponent implements OnInit {
       this.customers = await this.customerService.getAllCustomers();
       this.products = await this.productService.getAllProducts();
       this.orders = await this.orderService.getAllOrders();
+      this.allOrders = this.orders; // Sauvegardez toutes les commandes initialement
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -103,6 +123,7 @@ export class OrdersComponent implements OnInit {
     try {
       const createdOrder = await this.orderService.createOrder(newOrder);
       this.orders.push(createdOrder);
+      this.allOrders.push(createdOrder); // Ajoutez la nouvelle commande à allOrders
       this.resetOrderForm(); // Reset the form after creating an order
       this.showAddOrderForm = false;
     } catch (error) {
@@ -113,10 +134,15 @@ export class OrdersComponent implements OnInit {
   async updateOrderStatus(id: number, status: string) {
     try {
       console.log(`Updating order ${id} status to ${status}`);
-      const order = this.orders.find(order => order.id === id);
-      if (order) {
-        order.status = status;
-        await this.orderService.updateOrderStatus(id, status);
+      const updatedOrder = await this.orderService.updateOrderStatus(id, status);
+      const index = this.orders.findIndex(order => order.id === id);
+      if (index !== -1) {
+        this.orders[index].status = updatedOrder.status;
+      }
+      // Mettez à jour allOrders également
+      const allOrdersIndex = this.allOrders.findIndex(order => order.id === id);
+      if (allOrdersIndex !== -1) {
+        this.allOrders[allOrdersIndex].status = updatedOrder.status;
       }
     } catch (error) {
       console.error(`Error updating order status to ${status}:`, error);
@@ -127,8 +153,111 @@ export class OrdersComponent implements OnInit {
     try {
       await this.orderService.deleteOrder(id);
       this.orders = this.orders.filter(order => order.id !== id);
+      this.allOrders = this.allOrders.filter(order => order.id !== id); // Supprimez la commande de allOrders
     } catch (error) {
       console.error('Error deleting order:', error);
+    }
+  }
+
+  // Méthode pour ouvrir le modal de modification
+  openEditModal(order: Order): void {
+    this.showEditModal = true;
+    this.editOrderForm.reset({
+      id: order.id,
+      customerId: order.customerId,
+      orderDate: order.orderDate,
+      status: order.status
+    });
+    this.editOrderProducts.clear();
+    order.orderProducts.forEach(op => {
+      this.editOrderProducts.push(this.fb.group({
+        productId: [op.productId, Validators.required],
+        quantity: [op.quantity, [Validators.required, Validators.min(1)]]
+      }));
+    });
+  }
+
+  // Méthode pour fermer le modal de modification
+  closeEditModal(): void {
+    this.showEditModal = false;
+  }
+
+  // Méthode pour mettre à jour la commande
+  async updateOrder() {
+    if (this.editOrderForm.invalid) {
+      console.error('Form is invalid');
+      return;
+    }
+
+    const orderData = this.editOrderForm.value;
+    console.log('Order data from form:', orderData);
+
+    const updatedOrder: Order = {
+      id: orderData.id,
+      customerId: orderData.customerId,
+      orderProducts: orderData.orderProducts.map((op: any) => ({
+        productId: op.productId,
+        quantity: op.quantity
+      })),
+      orderDate: orderData.orderDate,
+      status: orderData.status,
+      totalPrice: 0 // Calculated on the server
+    };
+
+    try {
+      const updatedOrderResponse = await this.orderService.updateOrder(updatedOrder.id, updatedOrder);
+      const index = this.orders.findIndex(order => order.id === updatedOrder.id);
+      if (index !== -1) {
+        this.orders[index] = updatedOrderResponse;
+      }
+      // Mettez à jour allOrders également
+      const allOrdersIndex = this.allOrders.findIndex(order => order.id === updatedOrder.id);
+      if (allOrdersIndex !== -1) {
+        this.allOrders[allOrdersIndex] = updatedOrderResponse;
+      }
+      this.closeEditModal();
+    } catch (error) {
+      console.error('Error updating order:', error);
+    }
+  }
+
+  // Ajoutez cette méthode
+  searchOrders(): void {
+    this.applyFilters();
+  }
+
+  // Méthode pour appliquer tous les filtres
+  private applyFilters(): void {
+    if (!this.searchQuery) {
+      this.orders = this.allOrders;
+      this.noResultsMessage = '';
+      return;
+    }
+
+    let filteredOrders = this.allOrders;
+
+    const terms = this.searchQuery.toLowerCase().split(' ');
+    filteredOrders = filteredOrders.filter(order => {
+      return terms.every(term =>
+        order.customer?.email.toLowerCase().includes(term) ||
+        order.customer?.firstName.toLowerCase().includes(term) ||
+        order.customer?.lastName.toLowerCase().includes(term) ||
+        order.orderProducts.some(op => op.product?.name.toLowerCase().includes(term)) ||
+        order.totalPrice.toString().includes(term) ||
+        order.orderDate.includes(term)
+      );
+    });
+
+    if (this.currentTable !== 'all') {
+      filteredOrders = filteredOrders.filter(order => order.status.toLowerCase() === this.currentTable.toLowerCase());
+    }
+
+    this.orders = filteredOrders;
+
+    if (this.orders.length === 0) {
+      this.noResultsMessage = 'No results found.';
+    } else {
+      this.noResultsMessage = '';
     }
   }
 }

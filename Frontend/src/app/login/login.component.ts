@@ -23,6 +23,7 @@ export class LoginComponent {
   errorMessage: string | null = null;
   successMessage: string | null = null;
   showPassword = false;
+  isLoadingStep = false;
 
   @ViewChild('passwordField') passwordField!: ElementRef;
 
@@ -30,6 +31,7 @@ export class LoginComponent {
 
   async login() {
     this.clearMessages();
+    this.isLoadingStep = true;
     if (this.loginStage === 1) {
       try {
         const result = await this.authService.login(this.email, this.password);
@@ -43,12 +45,15 @@ export class LoginComponent {
       } catch (error) {
         this.errorMessage = 'Login failed. Please check your email or password and try again.';
         console.error('Login failed:', error);
+      } finally {
+        this.isLoadingStep = false;
       }
     }
   }
 
   async verifyCode() {
     this.clearMessages();
+    this.isLoadingStep = true;
     if (this.userId && this.verificationCode) {
       try {
         const success = await this.authService.verifyCode(this.userId, this.verificationCode);
@@ -61,6 +66,8 @@ export class LoginComponent {
       } catch (error) {
         this.errorMessage = 'Verification failed. Please check the code and try again.';
         console.error('Verification failed:', error);
+      } finally {
+        this.isLoadingStep = false;
       }
     }
   }

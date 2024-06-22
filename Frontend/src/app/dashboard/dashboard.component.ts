@@ -2,11 +2,11 @@ import {Component, Inject, OnInit, PLATFORM_ID} from '@angular/core';
 import {AsyncPipe, isPlatformBrowser} from '@angular/common';
 import {Chart, registerables} from 'chart.js';
 import {OrderService} from '../services/order.service';
-import {CustomerService} from '../services/customer.service';
+import {CustomerService}from '../services/customer.service';
 import {Order} from '../models/order.model';
-import {Customer} from '../models/customer.model';
-import {format, parseISO} from 'date-fns';
-import {TaskService} from '../services/task.service';
+import {Customer}from '../models/customer.model';
+import {format, parseISO}from 'date-fns';
+import {TaskService}from '../services/task.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,6 +22,7 @@ export class DashboardComponent implements OnInit {
   newCustomers: number = 0;
   totalOrders: number = 0;
   pendingTasks: number = 0;
+  pendingTasksProgress: number = 0;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -48,7 +49,9 @@ export class DashboardComponent implements OnInit {
       const customers: Customer[] = await this.customerService.getAllCustomers();
       this.newCustomers = this.calculateNewCustomers(customers);
 
-      this.pendingTasks = await this.calculatePendingTasks();
+      const pendingTasks = await this.taskService.getTasksByStatus('pending');
+      this.pendingTasks = pendingTasks.length;
+      this.pendingTasksProgress = this.calculatePendingTasksProgress(pendingTasks.length);
 
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
@@ -109,10 +112,8 @@ export class DashboardComponent implements OnInit {
     return customers.filter(customer => format(parseISO(customer.createdAt), 'MMMM') === currentMonth).length;
   }
 
-  async calculatePendingTasks(): Promise<number> {
-    const pendingTasks = await this.taskService.getTasksByStatus('pending');
-    return pendingTasks.length;
+  calculatePendingTasksProgress(pendingTasksCount: number): number {
+    const totalTasks = 100; // Suppose you have a total task count of 100
+    return (pendingTasksCount / totalTasks) * 100;
   }
-
-
 }

@@ -57,7 +57,7 @@ public class AuthController {
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
         Optional<User> existingUser = userRepository.findByEmail(registerDTO.email());
         if (existingUser.isPresent()) {
-            return ResponseEntity.status(400).body("User already exists");
+            return ResponseEntity.status(409).body("User already exists");
         }
 
         User newUser = new User();
@@ -71,6 +71,7 @@ public class AuthController {
 
         return ResponseEntity.ok(registeredUser);
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthentificationDTO authentificationDTO) {
@@ -184,20 +185,32 @@ public class AuthController {
             }
         }
 
-        if (token != null) {
-            if (!jwtService.isTokenExpired(token)) {
-                String username = jwtService.extractUsername(token);
-                User user = userRepository.findByEmail(username)
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
-                return ResponseEntity.ok(user);
-            } else {
-                System.out.println("Token is expired.");
-            }
+        if (token != null && !jwtService.isTokenExpired(token)) {
+            String username = jwtService.extractUsername(token);
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+
+            // Supprimer les champs inutiles en définissant les champs non nécessaires à null
+            user.setPassword(null);
+            user.setRoles(null);
+            user.setUserLogs(null);
+            user.setVerificationTokens(null);
+
+            // Créer une map avec les champs nécessaires
+            Map<String, Object> userProfile = new HashMap<>();
+            userProfile.put("firstname", user.getFirstname());
+            userProfile.put("lastname", user.getLastname());
+            userProfile.put("email", user.getEmail());
+            userProfile.put("image", user.getImage());
+            userProfile.put("groupe", user.getGroupe());
+
+            return ResponseEntity.ok(userProfile);
         } else {
-            System.out.println("Token is null or missing.");
+            System.out.println("Token is null, missing or expired.");
+            return ResponseEntity.status(401).body("Not authenticated");
         }
-        return ResponseEntity.status(401).body("Not authenticated");
     }
+
 
 }
 

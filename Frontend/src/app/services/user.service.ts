@@ -16,6 +16,7 @@ export class UserService {
     const response = await axios.get<User[]>(`${this.baseUrl}`, {
       withCredentials: true
     });
+    console.log(response)
     return response.data;
   }
 
@@ -23,6 +24,7 @@ export class UserService {
     const response = await axios.get<User>(`${this.baseUrl}/${id}`, {
       withCredentials: true
     });
+    console.log(response)
     return response.data;
   }
 

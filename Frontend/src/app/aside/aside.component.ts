@@ -39,6 +39,7 @@ export class AsideComponent implements OnInit {
 
   private loadUserProfile() {
     this.userService.getUserProfile().then(user => {
+      console.log(this.user)
       this.user = user;
     }).catch(error => {
       console.error('Failed to load user data', error);

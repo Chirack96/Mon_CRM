@@ -1,0 +1,15 @@
+:root {
+  --transition-speed: 0.5s;
+}
+
+html {
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+body {
+  @apply bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-200;
+}
+
+.btn {
+  @apply transition-transform transform hover:scale-105 hover:shadow-2xl;
+}

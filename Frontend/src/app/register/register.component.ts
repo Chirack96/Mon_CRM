@@ -3,6 +3,7 @@ import { NgIf } from "@angular/common";
 import { User } from "../models/user.model";
 import { FormsModule } from "@angular/forms";
 import { AuthService } from "../services/auth.service";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -19,21 +20,41 @@ export class RegisterComponent {
   confirmPassword: string = '';
   showPassword = false;
   showConfirmPassword = false;
+  errorMessage: string = '';
+  showSuccessMessage: boolean = false;
+  showErrorMessage: boolean = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   async register() {
     if (this.user.password !== this.confirmPassword) {
-      console.error('Passwords do not match');
+      this.errorMessage = 'Passwords do not match';
+      this.showErrorMessage = true;
+      this.showSuccessMessage = false;
       return;
     }
     try {
-      // Ensure 'groupe' is set to an empty string if not provided
+      this.errorMessage = ''; // Clear previous errors
+      this.showErrorMessage = false;
       this.user.groupe = this.user.groupe || '';
       const response = await this.authService.register(this.user);
-      console.log('User registered successfully', response);
-    } catch (error) {
+      if (response) {
+        console.log('User registered successfully', response);
+        this.showSuccessMessage = true;
+        setTimeout(() => {
+          this.router.navigate(['/login'], { queryParams: { message: 'You can now log in' } });
+        }, 2000); // Wait for 2 seconds before redirecting
+      }
+    } catch (error: any) {
       console.error('Error registering user', error);
+      if (error.status === 409) { // HTTP 409 Conflict for email already exists
+        this.errorMessage = 'Email already exists';
+        this.showErrorMessage = true
+      } else {
+        this.errorMessage = error.error?.message || 'An error occurred during registration';
+      }
+      this.showErrorMessage = true;
+      this.showSuccessMessage = false;
     }
   }
 

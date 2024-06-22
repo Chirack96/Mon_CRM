@@ -17,7 +17,7 @@ export class AuthService {
   public isLoading = this.isLoadingSource.asObservable();
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    this.initializeLoginState();
+    this.initializeLoginState().then(r => console.log('Login state initialized'));
   }
 
   public async initializeLoginState() {
@@ -57,7 +57,7 @@ export class AuthService {
       return response.data;
     } catch (error) {
       console.error('Registration failed', this.getErrorMessage(error));
-      return null;
+      throw this.getErrorMessage(error); // Propager l'erreur pour qu'elle soit gérée dans le composant
     } finally {
       this.isLoadingSource.next(false);
     }

@@ -1,1 +1,15 @@
 @import 'tailwindcss/tailwind';
+header {
+  .bg-blue-600 {
+    @apply bg-gradient-to-r from-blue-500 to-blue-700;
+  }
+
+  button {
+    @apply transition-all duration-300 ease-in-out;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  }
+}

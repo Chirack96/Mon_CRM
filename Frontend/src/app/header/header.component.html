@@ -2,22 +2,45 @@
   <div class="flex items-center space-x-4">
     <h1 class="text-white text-2xl font-bold">CRM Application</h1>
     <nav class="hidden md:flex space-x-4">
-      <button *ngIf="isLogged"><a routerLink="/dashboard" class="bg-white text-blue-600 px-3 py-2 rounded">Dashboard</a></button>
-      <button *ngIf="isLogged"><a routerLink="/customers" class="bg-white text-blue-600 px-3 py-2 rounded">Customers</a></button>
-      <button *ngIf="isLogged"><a routerLink="/reports" class="bg-white text-blue-600 px-3 py-2 rounded">Reports</a></button>
-      <button *ngIf="isLogged"><a routerLink="/settings" class="bg-white text-blue-600 px-3 py-2 rounded">Settings</a></button>
-      <button *ngIf="isLogged"><a routerLink="/products" class="bg-white text-blue-600 px-3 py-2 rounded">Products</a></button>
-      <button *ngIf="isLogged"><a routerLink="/orders" class="bg-white text-blue-600 px-3 py-2 rounded">Orders</a></button>
-      <button *ngIf="isLogged"><a routerLink="/tickets" class="bg-white text-blue-600 px-3 py-2 rounded">Tickets</a></button>
-      <button *ngIf="isLogged"><a routerLink="/users" class="bg-white text-blue-600 px-3 py-2 rounded">Users</a></button>
-      <button *ngIf="isLogged"><a routerLink="/tasks" class="bg-white text-blue-600 px-3 py-2 rounded">Tasks</a></button>
+      <button *ngIf="isLogged"><a routerLink="/dashboard" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+      </button>
+      <button *ngIf="isLogged"><a routerLink="/customers" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-users mr-2"></i>Customers</a>
+      </button>
+      <button *ngIf="isLogged"><a routerLink="/reports" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-chart-bar mr-2"></i>Reports</a>
+      </button>
+      <button *ngIf="isLogged"><a routerLink="/settings" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-cogs mr-2"></i>Settings</a>
+      </button>
+      <button *ngIf="isLogged"><a routerLink="/products" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-box mr-2"></i>Products</a>
+      </button>
+      <button *ngIf="isLogged"><a routerLink="/orders" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-shopping-cart mr-2"></i>Orders</a>
+      </button>
+      <button *ngIf="isLogged"><a routerLink="/tickets" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-ticket-alt mr-2"></i>Tickets</a>
+      </button>
+      <button *ngIf="isLogged"><a routerLink="/users" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-user mr-2"></i>Users</a>
+      </button>
+      <button *ngIf="isLogged"><a routerLink="/tasks" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-tasks mr-2"></i>Tasks</a>
+      </button>
     </nav>
   </div>
   <div class="flex items-center space-x-4">
     <ng-container *ngIf="!isLoading">
-      <button *ngIf="!isLogged"><a routerLink="/register" class="bg-white text-blue-600 px-3 py-2 rounded">Register</a></button>
-      <button *ngIf="!isLogged"><a routerLink="/login" class="bg-white text-blue-600 px-3 py-2 rounded">Login</a></button>
-      <button *ngIf="isLogged" (click)="logout()" class="bg-white text-blue-600 px-3 py-2 rounded">Logout</button>
+      <button *ngIf="!isLogged"><a routerLink="/register" class="bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-user-plus mr-2"></i>Register</a>
+      </button>
+      <button *ngIf="!isLogged"><a routerLink="/login" class="bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-sign-in-alt mr-2"></i>Login</a>
+      </button>
+      <button *ngIf="isLogged" (click)="logout()" class="bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
     </ng-container>
   </div>
 </header>

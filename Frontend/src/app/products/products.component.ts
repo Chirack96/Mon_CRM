@@ -23,7 +23,7 @@ export class ProductsComponent implements OnInit {
   constructor(private productService: ProductService) { }
 
   ngOnInit(): void {
-    this.fetchProducts();
+    this.fetchProducts().then(r => console.log('Products fetched'));
   }
 
   async fetchProducts() {
