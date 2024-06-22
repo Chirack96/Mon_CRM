@@ -12,6 +12,7 @@ import {UsersComponent} from "./users/users.component";
 import {AuthGuard} from "./auth.guard";
 import {TaskComponent} from "./task/task.component";
 import {UserLogsComponent} from "./user-logs/user-logs.component";
+import {HumanResourcesComponent} from "./human-ressources/human-ressources.component";
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard]},
   { path: 'tasks', component: TaskComponent, canActivate: [AuthGuard]},
   { path: 'user-logs', component: UserLogsComponent},
+  {path: 'human-resources', component: HumanResourcesComponent, canActivate: [AuthGuard]},
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard' }
 ];

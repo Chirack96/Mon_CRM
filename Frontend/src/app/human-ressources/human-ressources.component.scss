@@ -1,0 +1,9 @@
+.tab {
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+
+.tab.active {
+  border-color: #4a90e2;
+  color: #4a90e2;
+}
