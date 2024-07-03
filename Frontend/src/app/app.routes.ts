@@ -13,6 +13,8 @@ import { AuthGuard } from "./auth.guard";
 import { TaskComponent } from "./task/task.component";
 import { UserLogsComponent } from "./user-logs/user-logs.component";
 import { HumanResourcesComponent } from "./human-ressources/human-ressources.component";
+import {ScheduleCalendarComponent} from "./schedule-calendar/schedule-calendar.component";
+import {UserProfileComponent} from "./user-profile/user-profile.component";
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -28,6 +30,8 @@ export const routes: Routes = [
   { path: 'tasks', component: TaskComponent, canActivate: [AuthGuard] },
   { path: 'user-logs', component: UserLogsComponent, canActivate: [AuthGuard] }, // Supposons que nous ayons ajouté canActivate ici
   { path: 'human-resources', component: HumanResourcesComponent, canActivate: [AuthGuard] },
+  {path: 'schedule-calendar', component: ScheduleCalendarComponent, canActivate: [AuthGuard]},
+  {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard' }
 ];

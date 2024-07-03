@@ -1,0 +1,7 @@
+.card {
+  @apply h-40 flex items-center;
+}
+
+.avatar {
+  @apply w-16 h-16 rounded-full object-cover;
+}

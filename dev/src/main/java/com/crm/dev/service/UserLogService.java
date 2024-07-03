@@ -41,4 +41,13 @@ public class UserLogService {
     public List<UserLog> findAllLogs() {
         return userLogRepository.findAll();
     }
+
+    public List<UserLog> findLogsByEmail(String email) {
+        return userLogRepository.findByEmailOrderByLoginTimeDesc(email);
+    }
+
+    public Date getLastLoginTime(String email) {
+        List<UserLog> logs = findLogsByEmail(email);
+        return logs.isEmpty() ? null : logs.getFirst().getLoginTime();
+    }
 }

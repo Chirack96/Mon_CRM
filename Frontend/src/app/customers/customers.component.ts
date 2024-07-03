@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CustomerService } from '../services/customer.service';
 import { Customer } from '../models/customer.model';
-import {DatePipe, NgForOf, NgIf} from "@angular/common";
-import {FormsModule} from "@angular/forms";
+import { DatePipe, NgForOf, NgIf } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-customers',
@@ -14,7 +15,15 @@ import {FormsModule} from "@angular/forms";
     NgIf,
     DatePipe
   ],
-  styleUrls: ['./customers.component.scss']
+  styleUrls: ['./customers.component.scss'],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ transform: 'translateX(-100%)', opacity: 0 }),
+        animate('800ms ease-out', style({ transform: 'translateX(0)', opacity: 1 }))
+      ])
+    ])
+  ]
 })
 export class CustomersComponent implements OnInit {
   customers: Customer[] = [];
@@ -24,7 +33,7 @@ export class CustomersComponent implements OnInit {
   constructor(private customerService: CustomerService) { }
 
   ngOnInit(): void {
-    this.fetchCustomers();
+    this.fetchCustomers().then(r => console.log('Customers fetched'));
   }
 
   async fetchCustomers() {

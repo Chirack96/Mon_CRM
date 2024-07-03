@@ -16,4 +16,26 @@ export class UserLogService {
     });
     return response.data;
   }
+
+  async getUserLogsByEmail(userEmail: string): Promise<UserLog[]> {
+    const response = await axios.get<UserLog[]>(`${this.baseUrl}?email=${userEmail}`, {
+      withCredentials: true
+    });
+    console.log('User logs:', response.data);
+    return response.data;
+  }
+
+  async getLastLoginTime(userEmail: string): Promise<Date | null> {
+    try {
+      const logs = await this.getUserLogsByEmail(userEmail);
+      if (logs.length > 0) {
+        return new Date(logs[logs.length - 1].loginTime);
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching user logs:', error);
+      return null;
+    }
+  }
 }

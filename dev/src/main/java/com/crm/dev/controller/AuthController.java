@@ -203,6 +203,7 @@ public class AuthController {
             userProfile.put("email", user.getEmail());
             userProfile.put("image", user.getImage());
             userProfile.put("groupe", user.getGroupe());
+            userProfile.put("id", user.getId());
 
             return ResponseEntity.ok(userProfile);
         } else {

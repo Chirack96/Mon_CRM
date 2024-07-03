@@ -1,0 +1,67 @@
+<div class="p-4 flex flex-col flex-grow bg-gray-100">
+  <div class="p-4 rounded-lg bg-white shadow-lg">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+      <a routerLink="/orders" class="p-6 bg-blue-500 text-white rounded-lg shadow-md flex items-center cursor-pointer transition-transform transform hover:scale-105">
+        <div class="flex-shrink-0">
+          <i class="fas fa-euro-sign fa-2x"></i>
+        </div>
+        <div class="ml-4">
+          <h2 class="text-lg font-semibold">Total Sales</h2>
+          <p class="mt-2 text-3xl font-bold">{{totalSales}}</p>
+        </div>
+      </a>
+      <a routerLink="/customers" class="p-6 bg-green-500 text-white rounded-lg shadow-md flex items-center cursor-pointer transition-transform transform hover:scale-105">
+        <div class="flex-shrink-0">
+          <i class="fas fa-user-plus fa-2x"></i>
+        </div>
+        <div class="ml-4">
+          <h2 class="text-lg font-semibold">New Customers</h2>
+          <p class="mt-2 text-3xl font-bold">{{ newCustomers }}</p>
+        </div>
+      </a>
+      <a routerLink="/orders" class="p-6 bg-yellow-500 text-white rounded-lg shadow-md flex items-center cursor-pointer transition-transform transform hover:scale-105">
+        <div class="flex-shrink-0">
+          <i class="fas fa-shopping-cart fa-2x"></i>
+        </div>
+        <div class="ml-4">
+          <h2 class="text-lg font-semibold">Total Orders</h2>
+          <p class="mt-2 text-3xl font-bold">{{ totalOrders }}</p>
+        </div>
+      </a>
+      <a routerLink="/tasks" class="p-6 bg-red-500 text-white rounded-lg shadow-md flex items-center cursor-pointer transition-transform transform hover:scale-105">
+        <div class="flex-shrink-0">
+          <i class="fas fa-tasks fa-2x"></i>
+        </div>
+        <div class="ml-4 w-full">
+          <h2 class="text-lg font-semibold">Pending Tasks</h2>
+          <p class="mt-2 text-3xl font-bold">{{ pendingTasks }}</p>
+          <div class="mt-2 w-full bg-red-300 rounded-full h-2.5">
+            <div class="bg-red-700 h-2.5 rounded-full" [style.width.%]="pendingTasksProgress"></div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="p-6 bg-white rounded-lg shadow-md mb-4">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">Sales Overview</h2>
+      <canvas id="salesChart"></canvas>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4">
+      <div class="p-6 bg-white rounded-lg shadow-md mb-4">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Top Selling Products</h2>
+        <canvas id="topSellingChart"></canvas>
+      </div>
+
+      <div class="p-6 bg-white rounded-lg shadow-md mb-4">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Least Selling Products</h2>
+        <canvas id="leastSellingChart"></canvas>
+      </div>
+
+      <div class="p-6 bg-white rounded-lg shadow-md mb-4">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Revenue by Customer</h2>
+        <canvas id="revenueByCustomerChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>

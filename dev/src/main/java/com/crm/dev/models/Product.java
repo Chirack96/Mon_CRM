@@ -25,4 +25,10 @@ public class Product {
 
     @Column(nullable = false)
     private int stock;
+
+    @Column(nullable = false)
+    private String category;
+
+    @Column(nullable = false, unique = true)
+    private String productCode;
 }

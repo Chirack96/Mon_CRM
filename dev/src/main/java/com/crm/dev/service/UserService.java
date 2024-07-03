@@ -1,6 +1,7 @@
 package com.crm.dev.service;
 
 import com.crm.dev.models.Role;
+import com.crm.dev.models.Training;
 import com.crm.dev.models.User;
 import com.crm.dev.repository.RoleRepository;
 import com.crm.dev.repository.UserRepository;

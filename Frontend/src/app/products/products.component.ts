@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../services/product.service';
 import { Product } from '../models/product.model';
-import {NgForOf, NgIf} from '@angular/common';
+import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-products',
@@ -11,14 +12,26 @@ import { FormsModule } from '@angular/forms';
   imports: [
     NgForOf,
     FormsModule,
-    NgIf
+    NgIf,
+    NgClass
   ],
-  styleUrls: ['./products.component.scss']
+  styleUrls: ['./products.component.scss'],
+  animations: [
+    trigger('fadeInSlideIn', [
+      transition('void => *', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+    ]),
+  ],
 })
 export class ProductsComponent implements OnInit {
   products: Product[] = [];
-  newProduct: Product = { id: 0, name: '', description: '', price: 0, stock: 0 };
+  filteredProducts: Product[] = [];
+  newProduct: Product = { id: 0, name: '', description: '', price: 0, category: '', productCode: '', stock: 0 };
   showAddProductForm: boolean = false;
+  searchTerm: string = '';
+  categories = ['Electromenager', 'Informatique', 'Furniture', 'Clothing', 'Books', 'Sports', 'Beauty'];
 
   constructor(private productService: ProductService) { }
 
@@ -29,6 +42,7 @@ export class ProductsComponent implements OnInit {
   async fetchProducts() {
     try {
       this.products = await this.productService.getAllProducts();
+      this.filteredProducts = this.products;
     } catch (error) {
       console.error('Error fetching products', error);
     }
@@ -38,8 +52,9 @@ export class ProductsComponent implements OnInit {
     try {
       const createdProduct = await this.productService.createProduct(this.newProduct);
       this.products.push(createdProduct);
-      this.newProduct = { id: 0, name: '', description: '', price: 0, stock: 0 }; // Réinitialiser le formulaire
-      this.showAddProductForm = false; // Masquer le formulaire après la création du produit
+      this.filteredProducts = this.products;
+      this.newProduct = { id: 0, name: '', description: '', price: 0, category: '', productCode: '', stock: 0 }; // Reset form
+      this.showAddProductForm = false; // Hide form after creation
     } catch (error) {
       console.error('Error creating product', error);
     }
@@ -49,8 +64,23 @@ export class ProductsComponent implements OnInit {
     try {
       await this.productService.deleteProduct(id);
       this.products = this.products.filter(product => product.id !== id);
+      this.filteredProducts = this.products;
     } catch (error) {
       console.error('Error deleting product', error);
     }
+  }
+
+  toggleForm() {
+    this.showAddProductForm = !this.showAddProductForm;
+  }
+
+  filterProducts() {
+    const term = this.searchTerm.toLowerCase();
+    this.filteredProducts = this.products.filter(product =>
+      product.name.toLowerCase().includes(term) ||
+      product.description.toLowerCase().includes(term) ||
+      product.category.toLowerCase().includes(term) ||
+      product.productCode.toLowerCase().includes(term)
+    );
   }
 }

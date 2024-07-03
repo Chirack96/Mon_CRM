@@ -1,6 +1,7 @@
 package com.crm.dev.service;
 
 import com.crm.dev.dto.OrderDTO;
+import com.crm.dev.dto.OrderProductDTO;
 import com.crm.dev.models.Customer;
 import com.crm.dev.models.Order;
 import com.crm.dev.models.OrderProduct;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -106,4 +108,34 @@ public class OrderService {
     public List<Order> findOrdersByStatus(String status) {
         return orderRepository.findByStatus(status);
     }
+
+    public List<OrderProductDTO> findTopSellingProducts(int limit) {
+        return orderRepository.findAll().stream()
+                .flatMap(order -> order.getOrderProducts().stream())
+                .collect(Collectors.groupingBy(OrderProduct::getProduct, Collectors.summingInt(OrderProduct::getQuantity)))
+                .entrySet().stream()
+                .map(entry -> new OrderProductDTO(entry.getKey().getId(), entry.getValue()))
+                .sorted((a, b) -> b.quantity().compareTo(a.quantity()))
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderProductDTO> findLeastSellingProducts(int limit) {
+        return orderRepository.findAll().stream()
+                .flatMap(order -> order.getOrderProducts().stream())
+                .collect(Collectors.groupingBy(OrderProduct::getProduct, Collectors.summingInt(OrderProduct::getQuantity)))
+                .entrySet().stream()
+                .map(entry -> new OrderProductDTO(entry.getKey().getId(), entry.getValue()))
+                .sorted((a, b) -> a.quantity().compareTo(b.quantity()))
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
+
+
+    public double calculateRevenueByCustomer(Long customerId) {
+        return orderRepository.findByCustomerId(customerId).stream()
+                .mapToDouble(Order::getTotalPrice)
+                .sum();
+    }
+
 }

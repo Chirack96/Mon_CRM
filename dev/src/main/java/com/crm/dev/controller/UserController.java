@@ -1,6 +1,7 @@
 package com.crm.dev.controller;
 
 import com.crm.dev.models.User;
+import com.crm.dev.models.Training;
 import com.crm.dev.dto.RegisterDTO;
 import com.crm.dev.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

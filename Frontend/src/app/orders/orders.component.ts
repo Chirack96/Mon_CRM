@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { OrderService } from '../services/order.service';
 import { CustomerService } from '../services/customer.service';
 import { ProductService } from '../services/product.service';
 import { Customer, Product, Order } from '../models/order.model';
 import { CurrencyPipe, NgClass, NgForOf, NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Ajoutez FormsModule pour utiliser ngModel
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-orders',
@@ -18,27 +18,28 @@ import { FormsModule } from '@angular/forms'; // Ajoutez FormsModule pour utilis
     NgForOf,
     NgIf,
     NgClass,
-    FormsModule // Ajoutez FormsModule ici
+    FormsModule
   ]
 })
 export class OrdersComponent implements OnInit {
   orders: Order[] = [];
   customers: Customer[] = [];
   products: Product[] = [];
-  allOrders: Order[] = []; // Ajoutez cette ligne pour stocker toutes les commandes initialement
+  allOrders: Order[] = [];
   orderForm: FormGroup;
-  editOrderForm: FormGroup; // Ajoutez cette ligne
+  editOrderForm: FormGroup;
   showAddOrderForm = false;
-  showEditModal = false; // Ajoutez cette ligne
+  showEditModal = false;
   currentTable: string = 'all';
-  searchQuery: string = ''; // Ajoutez cette ligne
-  noResultsMessage: string = ''; // Ajoutez cette ligne pour afficher un message en cas de non-résultats
+  searchQuery: string = '';
+  noResultsMessage: string = '';
 
   constructor(
     private orderService: OrderService,
     private customerService: CustomerService,
     private productService: ProductService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cd: ChangeDetectorRef // Inject ChangeDetectorRef
   ) {
     this.orderForm = this.fb.group({
       customerId: ['', Validators.required],
@@ -47,7 +48,7 @@ export class OrdersComponent implements OnInit {
       status: ['', Validators.required]
     });
 
-    this.editOrderForm = this.fb.group({ // Ajoutez cette ligne
+    this.editOrderForm = this.fb.group({
       id: [''],
       customerId: ['', Validators.required],
       orderProducts: this.fb.array([]),
@@ -95,7 +96,7 @@ export class OrdersComponent implements OnInit {
       this.customers = await this.customerService.getAllCustomers();
       this.products = await this.productService.getAllProducts();
       this.orders = await this.orderService.getAllOrders();
-      this.allOrders = this.orders; // Sauvegardez toutes les commandes initialement
+      this.allOrders = this.orders;
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -117,15 +118,16 @@ export class OrdersComponent implements OnInit {
         productId: op.productId,
         quantity: op.quantity
       })),
-      totalPrice: 0 // Calculated on the server
+      totalPrice: 0
     };
 
     try {
       const createdOrder = await this.orderService.createOrder(newOrder);
       this.orders.push(createdOrder);
-      this.allOrders.push(createdOrder); // Ajoutez la nouvelle commande à allOrders
-      this.resetOrderForm(); // Reset the form after creating an order
+      this.allOrders.push(createdOrder);
+      this.resetOrderForm();
       this.showAddOrderForm = false;
+      await this.fetchInitialData();
     } catch (error) {
       console.error('Error creating order:', error);
     }
@@ -139,11 +141,12 @@ export class OrdersComponent implements OnInit {
       if (index !== -1) {
         this.orders[index].status = updatedOrder.status;
       }
-      // Mettez à jour allOrders également
       const allOrdersIndex = this.allOrders.findIndex(order => order.id === id);
       if (allOrdersIndex !== -1) {
         this.allOrders[allOrdersIndex].status = updatedOrder.status;
       }
+      this.applyFilters(); // Reapply filters to update the displayed orders
+      this.cd.detectChanges(); // Force Angular to detect changes
     } catch (error) {
       console.error(`Error updating order status to ${status}:`, error);
     }
@@ -153,13 +156,12 @@ export class OrdersComponent implements OnInit {
     try {
       await this.orderService.deleteOrder(id);
       this.orders = this.orders.filter(order => order.id !== id);
-      this.allOrders = this.allOrders.filter(order => order.id !== id); // Supprimez la commande de allOrders
+      this.allOrders = this.allOrders.filter(order => order.id !== id);
     } catch (error) {
       console.error('Error deleting order:', error);
     }
   }
 
-  // Méthode pour ouvrir le modal de modification
   openEditModal(order: Order): void {
     this.showEditModal = true;
     this.editOrderForm.reset({
@@ -177,12 +179,10 @@ export class OrdersComponent implements OnInit {
     });
   }
 
-  // Méthode pour fermer le modal de modification
   closeEditModal(): void {
     this.showEditModal = false;
   }
 
-  // Méthode pour mettre à jour la commande
   async updateOrder() {
     if (this.editOrderForm.invalid) {
       console.error('Form is invalid');
@@ -201,7 +201,7 @@ export class OrdersComponent implements OnInit {
       })),
       orderDate: orderData.orderDate,
       status: orderData.status,
-      totalPrice: 0 // Calculated on the server
+      totalPrice: 0
     };
 
     try {
@@ -210,7 +210,6 @@ export class OrdersComponent implements OnInit {
       if (index !== -1) {
         this.orders[index] = updatedOrderResponse;
       }
-      // Mettez à jour allOrders également
       const allOrdersIndex = this.allOrders.findIndex(order => order.id === updatedOrder.id);
       if (allOrdersIndex !== -1) {
         this.allOrders[allOrdersIndex] = updatedOrderResponse;
@@ -221,12 +220,10 @@ export class OrdersComponent implements OnInit {
     }
   }
 
-  // Ajoutez cette méthode
   searchOrders(): void {
     this.applyFilters();
   }
 
-  // Méthode pour appliquer tous les filtres
   private applyFilters(): void {
     if (!this.searchQuery) {
       this.orders = this.allOrders;

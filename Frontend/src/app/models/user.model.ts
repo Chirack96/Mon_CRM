@@ -22,4 +22,14 @@ export class User {
     this.password = password;
     this.groupe = groupe;
   }
+
+
 }
+
+export interface Training {
+  id: number;
+  title: string;
+  description: string;
+  date: Date;
+  users?: User[];
+  }

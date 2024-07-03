@@ -1,6 +1,7 @@
 package com.crm.dev.controller;
 
 import com.crm.dev.dto.OrderDTO;
+import com.crm.dev.dto.OrderProductDTO;
 import com.crm.dev.models.Order;
 import com.crm.dev.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,5 +68,23 @@ public class OrderController {
     public ResponseEntity<List<Order>> getOrdersByStatus(@PathVariable String status) {
         List<Order> orders = orderService.findOrdersByStatus(status);
         return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/top-selling-products")
+    public ResponseEntity<List<OrderProductDTO>> getTopSellingProducts(@RequestParam int limit) {
+        List<OrderProductDTO> topSellingProducts = orderService.findTopSellingProducts(limit);
+        return ResponseEntity.ok(topSellingProducts);
+    }
+
+    @GetMapping("/least-selling-products")
+    public ResponseEntity<List<OrderProductDTO>> getLeastSellingProducts(@RequestParam int limit) {
+        List<OrderProductDTO> leastSellingProducts = orderService.findLeastSellingProducts(limit);
+        return ResponseEntity.ok(leastSellingProducts);
+    }
+
+    @GetMapping("/revenue-by-customer/{customerId}")
+    public ResponseEntity<Double> getRevenueByCustomer(@PathVariable Long customerId) {
+        double revenue = orderService.calculateRevenueByCustomer(customerId);
+        return ResponseEntity.ok(revenue);
     }
 }

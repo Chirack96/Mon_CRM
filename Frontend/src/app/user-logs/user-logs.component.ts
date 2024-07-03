@@ -27,7 +27,7 @@ export class UserLogsComponent implements OnInit {
   constructor(private userLogService: UserLogService) {}
 
   ngOnInit(): void {
-    this.loadUserLogs();
+    this.loadUserLogs().then(r => r).catch(e => e);
   }
 
   async loadUserLogs(): Promise<void> {

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import {NgSwitch, NgSwitchCase} from "@angular/common";
-import {ScheduleCalendarComponent} from "../schedule-calendar/schedule-calendar.component";
-import {TrainingManagementComponent} from "../training-management/training-management.component";
-import {PerformanceDashboardComponent} from "../performance-dashboard/performance-dashboard.component";
-import {UsersComponent} from "../users/users.component";
-import {HRReportsComponent} from "../hr-reports/hr-reports.component";
+import { NgSwitch, NgSwitchCase } from '@angular/common';
+import { ScheduleCalendarComponent } from '../schedule-calendar/schedule-calendar.component';
+import { PerformanceDashboardComponent } from '../performance-dashboard/performance-dashboard.component';
+import { UsersComponent } from '../users/users.component';
+import { HRReportsComponent } from '../hr-reports/hr-reports.component';
+import { PayrollManagementComponent } from '../payroll-management/payroll-management.component';
+import {TrainingComponent} from "../training/training.component";
 
 @Component({
   selector: 'app-human-ressources',
@@ -12,14 +13,15 @@ import {HRReportsComponent} from "../hr-reports/hr-reports.component";
   imports: [
     NgSwitch,
     ScheduleCalendarComponent,
-    TrainingManagementComponent,
+    TrainingComponent,
     NgSwitchCase,
     UsersComponent,
     PerformanceDashboardComponent,
-    HRReportsComponent
+    HRReportsComponent,
+    PayrollManagementComponent
   ],
   templateUrl: './human-ressources.component.html',
-  styleUrl: './human-ressources.component.scss'
+  styleUrls: ['./human-ressources.component.scss']
 })
 export class HumanResourcesComponent {
   activeTab: string = 'profiles';

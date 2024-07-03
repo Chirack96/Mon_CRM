@@ -77,4 +77,24 @@ export class TaskService {
       return [];
     }
   }
+
+  async getTasksAssignedToUser(userEmail: string): Promise<Task[]> {
+    try {
+      const tasks = await this.getAllTasks();
+      return tasks.filter(task => task.assigneeEmail === userEmail);
+    } catch (error) {
+      console.error('Error fetching tasks assigned to user:', error);
+      return [];
+    }
+  }
+
+  async getTasksCreatedByUser(userEmail: string): Promise<Task[]> {
+    try {
+      const tasks = await this.getAllTasks();
+      return tasks.filter(task => task.assignee === userEmail);
+    } catch (error) {
+      console.error('Error fetching tasks created by user:', error);
+      return [];
+    }
+  }
 }

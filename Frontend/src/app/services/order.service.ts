@@ -80,4 +80,42 @@ export class OrderService {
       throw error;
     }
   }
+
+  async getTopSellingProducts(limit: number): Promise<any[]> {
+    try {
+      const response = await axios.get<any[]>(`${this.baseUrl}/top-selling-products`, {
+        params: { limit },
+        withCredentials: true
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch top selling products:', error);
+      throw error;
+    }
+  }
+
+  async getLeastSellingProducts(limit: number): Promise<any[]> {
+    try {
+      const response = await axios.get<any[]>(`${this.baseUrl}/least-selling-products`, {
+        params: { limit },
+        withCredentials: true
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch least selling products:', error);
+      throw error;
+    }
+  }
+
+  async getRevenueByCustomer(customerId: number): Promise<number> {
+    try {
+      const response = await axios.get<number>(`${this.baseUrl}/revenue-by-customer/${customerId}`, {
+        withCredentials: true
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch revenue by customer:', error);
+      throw error;
+    }
+  }
 }
