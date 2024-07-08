@@ -24,6 +24,7 @@ import { AuthService } from '../services/auth.service';
 export class AsideComponent implements OnInit {
   user: User | undefined = undefined; // Initialisation à undefined
   isLoggedIn = false;
+  userRole = '';
   defaultImage = 'https://img.freepik.com/photos-gratuite/portrait-jeune-homme-affaires-moustache-lunettes-rendu-3d_1142-51509.jpg?w=740&t=st=1718797177~exp=1718797777~hmac=b22839f330ca8ff8233e9daecd29bfafccb0a3788f670be5a1bb938798e18db1';
 
   constructor(private userService: UserService, private authService: AuthService) {}
@@ -33,6 +34,9 @@ export class AsideComponent implements OnInit {
       this.isLoggedIn = status;
       if (this.isLoggedIn) {
         this.loadUserProfile();
+        this.authService.userRole.subscribe(role => {
+          this.userRole = role;
+        });
       }
     });
   }
@@ -51,5 +55,10 @@ export class AsideComponent implements OnInit {
       return this.user.image;
     }
     return this.defaultImage;
+
+  }
+
+  isRole(role: string): boolean {
+    return this.userRole === role;
   }
 }

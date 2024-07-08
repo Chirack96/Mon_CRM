@@ -62,6 +62,7 @@ export class OrderService {
       const response = await axios.put<Order>(`${this.baseUrl}/${id}`, order, {
         withCredentials: true
       });
+      console.log (response.data);
       return response.data;
     } catch (error) {
       console.error('Failed to update order:', error);

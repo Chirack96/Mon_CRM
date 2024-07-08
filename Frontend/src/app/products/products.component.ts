@@ -4,6 +4,7 @@ import { Product } from '../models/product.model';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
+import {AuthService} from "../services/auth.service";
 
 @Component({
   selector: 'app-products',
@@ -30,13 +31,19 @@ export class ProductsComponent implements OnInit {
   filteredProducts: Product[] = [];
   newProduct: Product = { id: 0, name: '', description: '', price: 0, category: '', productCode: '', stock: 0 };
   showAddProductForm: boolean = false;
+  showEditProductModal: boolean = false;
   searchTerm: string = '';
   categories = ['Electromenager', 'Informatique', 'Furniture', 'Clothing', 'Books', 'Sports', 'Beauty'];
+  selectedProduct: Product | null = null;
+  userRole: string = '';
 
-  constructor(private productService: ProductService) { }
+  constructor(private productService: ProductService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.fetchProducts().then(r => console.log('Products fetched'));
+    this.authService.userRole.subscribe(role => {
+      this.userRole = role;
+    });
   }
 
   async fetchProducts() {
@@ -70,8 +77,30 @@ export class ProductsComponent implements OnInit {
     }
   }
 
+  async updateProduct() {
+    if (this.selectedProduct) {
+      try {
+        const updatedProduct = await this.productService.updateProduct(this.selectedProduct);
+        const index = this.products.findIndex(p => p.id === updatedProduct.id);
+        if (index !== -1) {
+          this.products[index] = updatedProduct;
+          this.filteredProducts = this.products;
+        }
+        this.showEditProductModal = false;
+        this.selectedProduct = null;
+      } catch (error) {
+        console.error('Error updating product', error);
+      }
+    }
+  }
+
   toggleForm() {
     this.showAddProductForm = !this.showAddProductForm;
+  }
+
+  editProduct(product: Product) {
+    this.selectedProduct = { ...product };
+    this.showEditProductModal = true;
   }
 
   filterProducts() {
@@ -82,5 +111,18 @@ export class ProductsComponent implements OnInit {
       product.category.toLowerCase().includes(term) ||
       product.productCode.toLowerCase().includes(term)
     );
+  }
+
+  closeEditModal() {
+    this.showEditProductModal = false;
+    this.selectedProduct = null;
+  }
+
+  confirmEdit() {
+    this.updateProduct();
+  }
+
+  isRole(role: string): boolean {
+    return this.userRole === role;
   }
 }

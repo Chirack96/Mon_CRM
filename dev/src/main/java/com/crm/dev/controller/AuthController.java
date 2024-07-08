@@ -212,6 +212,30 @@ public class AuthController {
         }
     }
 
+    @GetMapping("user-role")
+    public ResponseEntity<?> getUserRole(HttpServletRequest request) {
+        String token = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("auth_token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (token != null && !jwtService.isTokenExpired(token)) {
+            String username = jwtService.extractUsername(token);
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+
+            return ResponseEntity.ok(user.getRoles());
+        } else {
+            System.out.println("Token is null, missing or expired.");
+            return ResponseEntity.status(401).body("Not authenticated");
+        }
+    }
+
 
 }
 

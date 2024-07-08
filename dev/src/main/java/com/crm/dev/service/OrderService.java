@@ -10,10 +10,11 @@ import com.crm.dev.repository.OrderRepository;
 import com.crm.dev.repository.CustomerRepository;
 import com.crm.dev.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -63,28 +64,38 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order updateOrder(Long id, OrderDTO orderDTO) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-        Customer customer = customerRepository.findById(orderDTO.customerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-        order.setCustomer(customer);
-        order.setOrderDate(orderDTO.orderDate());
-        order.setStatus(orderDTO.status());
+    public ResponseEntity<Order> updateOrder(Long orderId, OrderDTO updatedOrderDTO) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-        List<OrderProduct> orderProducts = orderDTO.orderProducts().stream().map(opDTO -> {
+        Order existingOrder = optionalOrder.get();
+        existingOrder.setOrderDate(updatedOrderDTO.orderDate());
+        existingOrder.setStatus(updatedOrderDTO.status());
+
+        // Clear the existing orderProducts and add the new ones
+        existingOrder.getOrderProducts().clear();
+
+        for (OrderProductDTO orderProductDTO : updatedOrderDTO.orderProducts()) {
             OrderProduct orderProduct = new OrderProduct();
-            orderProduct.setOrder(order);
-            Product product = productRepository.findById(opDTO.productId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
-            orderProduct.setProduct(product);
-            orderProduct.setQuantity(opDTO.quantity());
-            return orderProduct;
-        }).collect(Collectors.toList());
+            orderProduct.setOrder(existingOrder);
 
-        order.setOrderProducts(orderProducts);
-        order.setTotalPrice(calculateTotalPrice(orderProducts));
-        return orderRepository.save(order);
+            Optional<Product> productOptional = productRepository.findById(orderProductDTO.productId());
+            if (productOptional.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            orderProduct.setProduct(productOptional.get());
+            orderProduct.setQuantity(orderProductDTO.quantity());
+            existingOrder.getOrderProducts().add(orderProduct);
+        }
+
+        // Calculate the total price after updating the order products
+        existingOrder.setTotalPrice(calculateTotalPrice(existingOrder.getOrderProducts()));
+
+        Order savedOrder = orderRepository.save(existingOrder);
+        return new ResponseEntity<>(savedOrder, HttpStatus.OK);
     }
 
     public void deleteOrder(Long id) {
@@ -131,11 +142,9 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-
     public double calculateRevenueByCustomer(Long customerId) {
         return orderRepository.findByCustomerId(customerId).stream()
                 .mapToDouble(Order::getTotalPrice)
                 .sum();
     }
-
 }

@@ -10,11 +10,17 @@ import { User } from '../models/user.model';
 export class AuthService {
   private baseUrl = 'http://localhost:8080/api/auth';
 
+
+
+
   private authStatusSource = new BehaviorSubject<boolean>(false);
   public authStatus = this.authStatusSource.asObservable();
 
   private isLoadingSource = new BehaviorSubject<boolean>(true);
   public isLoading = this.isLoadingSource.asObservable();
+
+  private userRoleSource = new BehaviorSubject<string>('');
+  public userRole = this.userRoleSource.asObservable();
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     this.initializeLoginState().then(r => console.log('Login state initialized'));
@@ -24,6 +30,7 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       try {
         await this.checkAuth();
+        await this.updateUserRole();
       } catch (error) {
         console.error('Erreur lors de la vérification de l\'authentification', this.getErrorMessage(error));
       } finally {
@@ -116,6 +123,10 @@ export class AuthService {
   private isAxiosError(error: any): error is AxiosError {
     return error.isAxiosError === true;
   }
+  public async updateUserRole(): Promise<void> {
+    const role = await this.getUserRole();
+    this.userRoleSource.next(role);
+  }
 
   private getErrorMessage(error: unknown): string {
     if (this.isAxiosError(error)) {
@@ -124,5 +135,26 @@ export class AuthService {
       return `Error: ${error.response?.status} - ${errorMessage}`;
     }
     return 'An unknown error occurred';
+  }
+
+  public async getUserRole(): Promise<string> {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        const response = await axios.get<{ id: number, name: string, authority: string }[]>(`${this.baseUrl}/user-role`, { withCredentials: true });
+        console.log('API Response:', response.data); // Vérifiez la réponse de l'API
+        if (response.data && response.data.length > 0) {
+          const userRole = response.data[0].name; // Assurez-vous que cela correspond à la structure de votre réponse
+          console.log('User role:', userRole);
+          return userRole;
+        } else {
+          console.log('No roles found for the user.');
+          return '';
+        }
+      } catch (error) {
+        console.error('Failed to get user role', this.getErrorMessage(error));
+        return '';
+      }
+    }
+    return '';
   }
 }

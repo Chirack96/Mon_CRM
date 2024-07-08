@@ -33,8 +33,8 @@
           <p class="text-gray-700 dark:text-gray-300"><strong>Address:</strong> {{ customer.address }}</p>
           <p class="text-gray-700 dark:text-gray-300"><strong>Created At:</strong> {{ customer.createdAt | date }}</p>
           <div class="mt-4 flex space-x-2">
-            <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">Edit</button>
-            <button (click)="deleteCustomer(customer.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
+            <button *ngIf="isRole('ADMIN')" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">Edit</button>
+            <button *ngIf="isRole('ADMIN')" (click)="deleteCustomer(customer.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
           </div>
         </div>
       </div>

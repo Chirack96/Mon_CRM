@@ -4,6 +4,7 @@ import { Customer } from '../models/customer.model';
 import { DatePipe, NgForOf, NgIf } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { trigger, transition, style, animate } from '@angular/animations';
+import { AuthService} from "../services/auth.service";
 
 @Component({
   selector: 'app-customers',
@@ -29,11 +30,16 @@ export class CustomersComponent implements OnInit {
   customers: Customer[] = [];
   newCustomer: Customer = { id: 0, firstName: '', lastName: '', email: '', address: '', phoneNumber: '', createdAt: '' };
   showAddCustomerForm: boolean = false;
+  userRole = '';
 
-  constructor(private customerService: CustomerService) { }
+
+  constructor(private customerService: CustomerService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.fetchCustomers().then(r => console.log('Customers fetched'));
+    this.authService.userRole.subscribe(role => {
+      this.userRole = role;
+    })
   }
 
   async fetchCustomers() {
@@ -66,5 +72,10 @@ export class CustomersComponent implements OnInit {
 
   getInitials(firstName: string, lastName: string): string {
     return `${firstName.charAt(0).toUpperCase()}${lastName.charAt(0).toUpperCase()}`;
+  }
+
+  isRole(role: string): boolean {
+    console.log(this.authService.userRole);
+    return this.userRole === role;
   }
 }

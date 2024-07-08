@@ -2,7 +2,7 @@
   <div class="p-4 rounded-lg shadow-lg bg-gray-100 dark:bg-gray-900">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100"><i class="fas fa-boxes mr-2"></i>Products</h2>
-      <button (click)="toggleForm()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+      <button *ngIf="isRole('ADMIN')" (click)="toggleForm()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
         {{ showAddProductForm ? 'Hide Form' : 'Add Product' }}
       </button>
     </div>
@@ -41,10 +41,35 @@
           <span class="ml-4 text-gray-600 dark:text-gray-400">Stock: {{ product.stock }}</span>
         </div>
         <div class="mt-4 flex justify-end space-x-2">
-          <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">Edit</button>
-          <button (click)="deleteProduct(product.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
+          <button *ngIf="isRole('ADMIN') || isRole('MANAGER')" (click)="editProduct(product)" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">Edit</button>
+          <button *ngIf="isRole('ADMIN') || isRole('MANAGER')" (click)="deleteProduct(product.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div *ngIf="showEditProductModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg relative w-full max-w-lg">
+      <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 dark:hover:text-gray-300" (click)="closeEditModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      <h2 class="text-2xl mb-4">Edit Product</h2>
+      <form (ngSubmit)="confirmEdit()" #editProductForm="ngForm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input [(ngModel)]="selectedProduct!.name" name="name" placeholder="Product Name" required class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input [(ngModel)]="selectedProduct!.description" name="description" placeholder="Description" required class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input [(ngModel)]="selectedProduct!.price" name="price" type="number" placeholder="Price" required class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select [(ngModel)]="selectedProduct!.category" name="category" required class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="" disabled>Select Category</option>
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+          </select>
+          <input [(ngModel)]="selectedProduct!.stock" name="stock" type="number" placeholder="Stock" required class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mt-4 flex justify-end space-x-2">
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Confirm</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 export class HeaderComponent implements OnInit, OnDestroy {
   isLogged = false;
   isLoading = true;
+  userRole = '';
   private authService = inject(AuthService);
   private router = inject(Router);
   private subscriptions: Subscription[] = [];
@@ -28,6 +29,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }),
       this.authService.isLoading.subscribe(loading => {
         this.isLoading = loading;
+      }),
+      this.authService.userRole.subscribe(role => {
+        this.userRole = role;
       })
     );
   }
@@ -39,5 +43,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+  isRole(role: string): boolean {
+    return this.userRole === role;
   }
 }

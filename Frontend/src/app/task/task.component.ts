@@ -6,6 +6,7 @@ import { User } from '../models/user.model';
 import { CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { FormsModule } from "@angular/forms";
 import { DatePipe, NgClass, NgForOf, NgIf, TitleCasePipe } from "@angular/common";
+import {AuthService} from "../services/auth.service";
 
 @Component({
   selector: 'app-task',
@@ -35,16 +36,20 @@ export class TaskComponent implements OnInit {
   currentUser: User | null = null;
   showCreateTaskForm: boolean = false;
   users: User[] = [];
-
+  userRole: string = '';
   constructor(
     private taskService: TaskService,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.loadTasks();
     this.loadCurrentUser();
     this.loadUsers();
+    this.authService.userRole.subscribe(role => {
+      this.userRole = role;
+    });
   }
 
   async loadTasks() {
@@ -219,5 +224,9 @@ export class TaskComponent implements OnInit {
       task.status = event.container.id as 'pending' | 'in-progress' | 'completed';
       this.updateTask(task).catch(error => console.error('Failed to update task status:', error));
     }
+  }
+
+  isRole(role: string): boolean {
+    return this.userRole === role;
   }
 }

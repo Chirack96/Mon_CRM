@@ -1,0 +1,6 @@
+com\crm\dev\repository\UserTrainingRepository.class
+com\crm\dev\repository\TrainingRepository.class
+com\crm\dev\models\UserTraining.class
+com\crm\dev\models\Training.class
+com\crm\dev\service\TrainingService.class
+com\crm\dev\controller\TrainingController.class

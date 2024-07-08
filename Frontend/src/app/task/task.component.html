@@ -31,7 +31,7 @@
     </select>
   </div>
 
-  <button (click)="showCreateTaskForm = !showCreateTaskForm" class="btn mb-4 bg-purple-600 text-white py-2 px-4 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
+  <button *ngIf="isRole('ADMIN')" (click)="showCreateTaskForm = !showCreateTaskForm" class="btn mb-4 bg-purple-600 text-white py-2 px-4 rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
     {{ showCreateTaskForm ? 'Cancel' : 'Create New Task' }}
   </button>
 

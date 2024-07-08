@@ -6,6 +6,7 @@ import { ProductService } from '../services/product.service';
 import { Customer, Product, Order } from '../models/order.model';
 import { CurrencyPipe, NgClass, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from "../services/auth.service";
 
 @Component({
   selector: 'app-orders',
@@ -33,11 +34,13 @@ export class OrdersComponent implements OnInit {
   currentTable: string = 'all';
   searchQuery: string = '';
   noResultsMessage: string = '';
+  userRole = '';
 
   constructor(
     private orderService: OrderService,
     private customerService: CustomerService,
     private productService: ProductService,
+    private authService: AuthService,
     private fb: FormBuilder,
     private cd: ChangeDetectorRef // Inject ChangeDetectorRef
   ) {
@@ -60,6 +63,13 @@ export class OrdersComponent implements OnInit {
   ngOnInit(): void {
     this.fetchInitialData().then(r => console.log('Initial data loaded'));
     this.resetOrderForm();
+    this.authService.userRole.subscribe(role => {
+      this.userRole = role;
+    });
+  }
+
+  isRole(role: string): boolean {
+    return this.userRole === role;
   }
 
   get orderProducts() {
@@ -113,7 +123,6 @@ export class OrdersComponent implements OnInit {
 
     const newOrder: Order = {
       ...orderData,
-      customerId: orderData.customerId,
       orderProducts: orderData.orderProducts.map((op: any) => ({
         productId: op.productId,
         quantity: op.quantity
@@ -182,7 +191,6 @@ export class OrdersComponent implements OnInit {
   closeEditModal(): void {
     this.showEditModal = false;
   }
-
   async updateOrder() {
     if (this.editOrderForm.invalid) {
       console.error('Form is invalid');
@@ -219,6 +227,7 @@ export class OrdersComponent implements OnInit {
       console.error('Error updating order:', error);
     }
   }
+
 
   searchOrders(): void {
     this.applyFilters();

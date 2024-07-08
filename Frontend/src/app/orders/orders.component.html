@@ -97,7 +97,7 @@
                 <div class="mt-4 flex space-x-2">
                   <button *ngIf="order.status === 'VALIDATED' || order.status === 'PENDING'" (click)="updateOrderStatus(order.id, 'CANCEL')" class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-600 transition-transform transform hover:scale-105">Cancel</button>
                   <button *ngIf="order.status === 'CANCEL' || order.status === 'PENDING'" (click)="updateOrderStatus(order.id, 'VALIDATED')" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105">Validate</button>
-                  <button (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-transform transform hover:scale-105">Delete</button>
+                  <button *ngIf="isRole('ADMIN')" (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-transform transform hover:scale-105">Delete</button>
                 </div>
               </div>
             </ng-container>
@@ -130,7 +130,7 @@
                   </ul>
                   <div class="mt-4 flex space-x-2">
                     <button (click)="updateOrderStatus(order.id, 'CANCEL')" class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-600 transition-transform transform hover:scale-105">Cancel</button>
-                    <button (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-transform transform hover:scale-105">Delete</button>
+                    <button *ngIf="isRole('ADMIN')" (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-transform transform hover:scale-105">Delete</button>
                   </div>
                 </div>
               </ng-container>
@@ -165,7 +165,7 @@
                   <div class="mt-4 flex space-x-2">
                     <button (click)="updateOrderStatus(order.id, 'CANCEL')" class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-600 transition-transform transform hover:scale-105">Cancel</button>
                     <button (click)="updateOrderStatus(order.id, 'VALIDATED')" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105">Validate</button>
-                    <button (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-transform transform hover:scale-105">Delete</button>
+                    <button *ngIf="isRole('ADMIN')" (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-transform transform hover:scale-105">Delete</button>
                   </div>
                 </div>
               </ng-container>
@@ -199,7 +199,7 @@
                   </ul>
                   <div class="mt-4 flex space-x-2">
                     <button (click)="updateOrderStatus(order.id, 'VALIDATED')" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105">Validate</button>
-                    <button (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-transform transform hover:scale-105">Delete</button>
+                    <button *ngIf="isRole('ADMIN')" (click)="deleteOrder(order.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-transform transform hover:scale-105">Delete</button>
                   </div>
                 </div>
               </ng-container>
@@ -212,22 +212,25 @@
 </div>
 
 <!-- Modal pour la modification des commandes -->
-<div *ngIf="showEditModal" class="fixed inset-0 flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-    <h2 class="text-2xl font-semibold mb-4">Edit Order</h2>
+<div *ngIf="showEditModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg relative w-full max-w-lg">
+    <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 dark:hover:text-gray-300" (click)="closeEditModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    <h2 class="text-2xl mb-4">Edit Order</h2>
     <form [formGroup]="editOrderForm" (ngSubmit)="updateOrder()">
-      <div class="mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="block text-gray-700">Customer</label>
         <select formControlName="customerId" class="p-2 border rounded w-full">
           <option value="" disabled>Select Customer</option>
           <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.firstName }} {{ customer.lastName }}</option>
         </select>
       </div>
-      <div class="mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="block text-gray-700">Order Date</label>
         <input type="date" formControlName="orderDate" class="p-2 border rounded w-full">
       </div>
-      <div class="mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="block text-gray-700">Status</label>
         <select formControlName="status" class="p-2 border rounded w-full">
           <option value="PENDING">Pending</option>

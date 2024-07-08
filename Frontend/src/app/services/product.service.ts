@@ -36,4 +36,11 @@ export class ProductService {
       withCredentials: true
     });
   }
+
+  async updateProduct(product: Product): Promise<Product> {
+    const response = await axios.put<Product>(`${this.baseUrl}/${product.id}`, product, {
+      withCredentials: true
+    });
+    return response.data;
+  }
 }

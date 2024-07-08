@@ -2,10 +2,10 @@
   <div class="flex items-center space-x-4">
     <h1 class="text-white text-2xl font-bold">CRM Application</h1>
     <nav class="hidden md:flex space-x-4">
-      <button *ngIf="isLogged"><a routerLink="/dashboard" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <button *ngIf="isLogged && isRole('ADMIN') || isRole('MANAGER')"><a routerLink="/dashboard" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
         <i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
       </button>
-      <button *ngIf="isLogged"><a routerLink="/customers" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <button *ngIf="isLogged "><a routerLink="/customers" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
         <i class="fas fa-users mr-2"></i>Customers</a>
       </button>
       <button *ngIf="isLogged"><a routerLink="/reports" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
@@ -23,7 +23,7 @@
       <button *ngIf="isLogged"><a routerLink="/tickets" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
         <i class="fas fa-ticket-alt mr-2"></i>Tickets</a>
       </button>
-      <button *ngIf="isLogged"><a routerLink="/users" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <button *ngIf="isLogged && isRole('ADMIN')"><a routerLink="/users" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
         <i class="fas fa-user mr-2"></i>Users</a>
       </button>
       <button *ngIf="isLogged"><a routerLink="/tasks" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
@@ -38,9 +38,6 @@
   </div>
   <div class="flex items-center space-x-4">
     <ng-container *ngIf="!isLoading">
-      <button *ngIf="!isLogged"><a routerLink="/register" class="bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-user-plus mr-2"></i>Register</a>
-      </button>
       <button *ngIf="!isLogged"><a routerLink="/login" class="bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
         <i class="fas fa-sign-in-alt mr-2"></i>Login</a>
       </button>

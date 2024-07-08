@@ -1,10 +1,10 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, Router, ActivatedRouteSnapshot, UrlTree } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { map, switchMap, take } from 'rxjs/operators';
-import { from } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 
-export const AuthGuard: CanActivateFn = () => {
+export const AuthGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -16,12 +16,26 @@ export const AuthGuard: CanActivateFn = () => {
         }
         return authService.authStatus.pipe(
           take(1),
-          map(isLoggedIn => {
+          switchMap(isLoggedIn => {
             if (isLoggedIn) {
-              return true;
+              const requiredRole = route.data['role'] as string | undefined;
+              console.log('Required Role:', requiredRole); // Vérifiez que le rôle requis est correctement lu
+              if (!requiredRole) {
+                // Pas de rôle requis, l'utilisateur doit simplement être authentifié
+                return of(true);
+              }
+              return from(authService.getUserRole()).pipe(
+                map(userRole => {
+                  console.log('User Role:', userRole); // Vérifiez les rôles
+                  if (userRole === requiredRole) {
+                    return true;
+                  } else {
+                    return router.parseUrl('/forbidden');
+                  }
+                })
+              );
             } else {
-              router.navigate(['/login']);
-              return false;
+              return of(router.parseUrl('/login'));
             }
           })
         );

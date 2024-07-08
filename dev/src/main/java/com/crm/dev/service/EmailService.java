@@ -28,7 +28,7 @@ public class EmailService {
                     + "<h3 style='color: #2e6c80;'>" + code + "</h3>"
                     + "<p>Ce code est valable pendant 15 minutes. Si vous n'avez pas initié cette demande, veuillez ignorer cet email.</p>"
                     + "<p>Merci,</p>"
-                    + "<p><strong>L'équipe de My Customize CRM</strong></p>"
+                    + "<p><strong>L'équipe de ACME CRM</strong></p>"
                     + "<hr>"
                     + "<img src='cid:companyLogo' style='width: 150px; display: block; margin-top: 20px;'>"
                     + "</div>";
