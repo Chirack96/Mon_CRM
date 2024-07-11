@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { UserLog } from '../models/user-log.model';
 import axios from 'axios';
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserLogService {
-  private baseUrl = 'http://localhost:8080/api/user-logs';
+  private baseUrl = `${environment.apiUrl}/user-logs`;
 
   constructor() {}
 

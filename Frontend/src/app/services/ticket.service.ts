@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { Ticket } from '../models/ticket.model';
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TicketService {
-  private baseUrl = 'http://localhost:8080/api/tickets';
+  private baseUrl = `${environment.apiUrl}/tickets`;
 
   constructor() { }
 

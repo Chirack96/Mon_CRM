@@ -1,18 +1,16 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import {isPlatformBrowser, NgClass} from '@angular/common';
+import {AsyncPipe, isPlatformBrowser, NgClass, NgIf} from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { AuthService } from './services/auth.service';
 import { AsideComponent } from './aside/aside.component';
-import { HomeComponent } from "./home/home.component";
-import { AsyncPipe, NgIf } from "@angular/common";
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, AsideComponent, HomeComponent, NgIf, AsyncPipe, NgClass],
+  imports: [RouterOutlet, HeaderComponent, FooterComponent, AsideComponent, AsyncPipe, NgClass, NgIf],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -20,7 +18,9 @@ export class AppComponent implements OnInit {
   isLoggedIn$: Observable<boolean>;
   isLoading$: Observable<boolean>;
   darkMode: boolean = false;
+  isSidebarOpen = false;
   isBrowser: boolean;
+  isLargeScreen: boolean = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: any, private authService: AuthService) {
     this.isLoggedIn$ = this.authService.authStatus;
@@ -33,6 +33,8 @@ export class AppComponent implements OnInit {
     if (this.isBrowser) {
       this.darkMode = localStorage.getItem('darkMode') === 'true';
       this.updateDarkModeClass();
+      this.checkScreenSize();
+      window.addEventListener('resize', this.checkScreenSize.bind(this));
     }
   }
 
@@ -51,5 +53,17 @@ export class AppComponent implements OnInit {
     } else {
       bodyClassList.remove('dark');
     }
+  }
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  closeSidebar() {
+    this.isSidebarOpen = false;
+  }
+
+  checkScreenSize() {
+    this.isLargeScreen = window.innerWidth >= 768;
   }
 }

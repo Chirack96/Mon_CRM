@@ -6,7 +6,15 @@
     </button>
   </div>
   <div class="flex flex-grow">
-    <app-aside *ngIf="isLoggedIn$ | async"></app-aside>
+    <!-- Bouton pour afficher la sidebar sur mobile -->
+    <button *ngIf="isLoggedIn$ | async" class="md:hidden p-4 text-gray-800 dark:text-gray-200 absolute left-4 top-4" (click)="toggleSidebar()">
+      <i [ngClass]="isSidebarOpen ? 'fas fa-times' : 'fas fa-columns'"></i>
+    </button>
+    <!-- Sidebar pour grands écrans -->
+    <app-aside *ngIf="isLoggedIn$ | async" class="hidden md:block"></app-aside>
+    <!-- Sidebar pour petits écrans avec animation -->
+    <app-aside *ngIf="isSidebarOpen && (isLoggedIn$ | async)" class="fixed inset-0 z-40 md:hidden"></app-aside>
+    <!-- Zone de contenu principale -->
     <div class="flex-grow p-4 bg-white dark:bg-gray-900 transition-colors duration-500">
       <router-outlet></router-outlet>
     </div>

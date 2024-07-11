@@ -36,13 +36,17 @@ export class OrdersComponent implements OnInit {
   noResultsMessage: string = '';
   userRole = '';
 
+  alertMessage: string = '';
+  alertType: 'success' | 'error' = 'success';
+  showAlert: boolean = false;
+
   constructor(
     private orderService: OrderService,
     private customerService: CustomerService,
     private productService: ProductService,
     private authService: AuthService,
     private fb: FormBuilder,
-    private cd: ChangeDetectorRef // Inject ChangeDetectorRef
+    private cd: ChangeDetectorRef
   ) {
     this.orderForm = this.fb.group({
       customerId: ['', Validators.required],
@@ -109,12 +113,14 @@ export class OrdersComponent implements OnInit {
       this.allOrders = this.orders;
     } catch (error) {
       console.error('Error loading data:', error);
+      this.showAlertMessage('Error loading data.', 'error');
     }
   }
 
   async createOrder() {
     if (this.orderForm.invalid) {
       console.error('Form is invalid');
+      this.showAlertMessage('Form is invalid.', 'error');
       return;
     }
 
@@ -137,8 +143,10 @@ export class OrdersComponent implements OnInit {
       this.resetOrderForm();
       this.showAddOrderForm = false;
       await this.fetchInitialData();
+      this.showAlertMessage('Order created successfully!', 'success');
     } catch (error) {
       console.error('Error creating order:', error);
+      this.showAlertMessage('Failed to create order.', 'error');
     }
   }
 
@@ -156,8 +164,10 @@ export class OrdersComponent implements OnInit {
       }
       this.applyFilters(); // Reapply filters to update the displayed orders
       this.cd.detectChanges(); // Force Angular to detect changes
+      this.showAlertMessage(`Order status updated to ${status}.`, 'success');
     } catch (error) {
       console.error(`Error updating order status to ${status}:`, error);
+      this.showAlertMessage(`Failed to update order status to ${status}.`, 'error');
     }
   }
 
@@ -166,8 +176,10 @@ export class OrdersComponent implements OnInit {
       await this.orderService.deleteOrder(id);
       this.orders = this.orders.filter(order => order.id !== id);
       this.allOrders = this.allOrders.filter(order => order.id !== id);
+      this.showAlertMessage('Order deleted successfully!', 'success');
     } catch (error) {
       console.error('Error deleting order:', error);
+      this.showAlertMessage('Failed to delete order.', 'error');
     }
   }
 
@@ -191,9 +203,11 @@ export class OrdersComponent implements OnInit {
   closeEditModal(): void {
     this.showEditModal = false;
   }
+
   async updateOrder() {
     if (this.editOrderForm.invalid) {
       console.error('Form is invalid');
+      this.showAlertMessage('Form is invalid.', 'error');
       return;
     }
 
@@ -223,11 +237,12 @@ export class OrdersComponent implements OnInit {
         this.allOrders[allOrdersIndex] = updatedOrderResponse;
       }
       this.closeEditModal();
+      this.showAlertMessage('Order updated successfully!', 'success');
     } catch (error) {
       console.error('Error updating order:', error);
+      this.showAlertMessage('Failed to update order.', 'error');
     }
   }
-
 
   searchOrders(): void {
     this.applyFilters();
@@ -265,5 +280,14 @@ export class OrdersComponent implements OnInit {
     } else {
       this.noResultsMessage = '';
     }
+  }
+
+  showAlertMessage(message: string, type: 'success' | 'error') {
+    this.alertMessage = message;
+    this.alertType = type;
+    this.showAlert = true;
+    setTimeout(() => {
+      this.showAlert = false;
+    }, 3000);
   }
 }

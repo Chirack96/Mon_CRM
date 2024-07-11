@@ -3,12 +3,13 @@ import { isPlatformBrowser } from '@angular/common';
 import axios, { AxiosError } from 'axios';
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:8080/api/auth';
+  private baseUrl = `${environment.apiUrl}/auth`;
 
 
 

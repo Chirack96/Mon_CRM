@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { RouterLink, RouterOutlet } from "@angular/router";
 import { FooterComponent } from "../footer/footer.component";
 import { HeaderComponent } from "../header/header.component";
-import { NgOptimizedImage, NgIf } from "@angular/common";
+import { NgOptimizedImage, NgIf, NgClass } from "@angular/common";
 import { UserService } from "../services/user.service";
 import { User } from "../models/user.model";
 import { AuthService } from '../services/auth.service';
@@ -16,12 +16,15 @@ import { AuthService } from '../services/auth.service';
     FooterComponent,
     HeaderComponent,
     NgOptimizedImage,
-    NgIf
+    NgIf,
+    NgClass
   ],
   templateUrl: './aside.component.html',
   styleUrls: ['./aside.component.scss']
 })
 export class AsideComponent implements OnInit {
+  @Input() isOpen: boolean = false;
+  @Output() closeSidebar = new EventEmitter<void>();
   user: User | undefined = undefined; // Initialisation à undefined
   isLoggedIn = false;
   userRole = '';
@@ -55,10 +58,22 @@ export class AsideComponent implements OnInit {
       return this.user.image;
     }
     return this.defaultImage;
-
   }
 
   isRole(role: string): boolean {
     return this.userRole === role;
+  }
+
+  close() {
+    this.closeSidebar.emit();
+  }
+
+  isLargeScreen(): boolean {
+    return window.innerWidth >= 768;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.isLargeScreen();
   }
 }

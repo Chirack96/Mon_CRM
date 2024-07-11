@@ -1,48 +1,86 @@
-<header class="bg-blue-600 p-4 flex justify-between items-center">
+<header class="bg-blue-600 p-4 flex justify-between items-center relative header-container">
   <div class="flex items-center space-x-4">
-    <h1 class="text-white text-2xl font-bold">CRM Application</h1>
-    <nav class="hidden md:flex space-x-4">
-      <button *ngIf="isLogged && isRole('ADMIN') || isRole('MANAGER')"><a routerLink="/dashboard" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
-      </button>
-      <button *ngIf="isLogged "><a routerLink="/customers" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-users mr-2"></i>Customers</a>
-      </button>
-      <button *ngIf="isLogged"><a routerLink="/reports" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-chart-bar mr-2"></i>Reports</a>
-      </button>
-      <button *ngIf="isLogged"><a routerLink="/settings" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-cogs mr-2"></i>Settings</a>
-      </button>
-      <button *ngIf="isLogged"><a routerLink="/products" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-box mr-2"></i>Products</a>
-      </button>
-      <button *ngIf="isLogged"><a routerLink="/orders" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-shopping-cart mr-2"></i>Orders</a>
-      </button>
-      <button *ngIf="isLogged"><a routerLink="/tickets" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-ticket-alt mr-2"></i>Tickets</a>
-      </button>
-      <button *ngIf="isLogged && isRole('ADMIN')"><a routerLink="/users" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-user mr-2"></i>Users</a>
-      </button>
-      <button *ngIf="isLogged"><a routerLink="/tasks" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-tasks mr-2"></i>Tasks</a>
-      </button>
-      <button *ngIf="isLogged">
-        <a routerLink="/user-profile" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-          <i class="fas fa-user-circle mr-2"></i>Profile
-        </a>
-      </button>
-    </nav>
+    <button aria-label="Toggle Menu" class="md:hidden text-white mr-2" (click)="toggleMenu()" *ngIf="isLogged">
+      <i class="fas fa-bars"></i>
+    </button>
+    <h1 class="text-white text-2xl font-bold">ACME CRM</h1>
   </div>
-  <div class="flex items-center space-x-4">
+  <nav class="hidden md:flex space-x-4 ml-4">
+    <!-- Navigation Desktop -->
+    <a *ngIf="isLogged && (isRole('ADMIN') || isRole('MANAGER'))" routerLink="/dashboard" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+    </a>
+    <a *ngIf="isLogged" routerLink="/customers" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-users mr-2"></i>Customers
+    </a>
+    <a *ngIf="isLogged" routerLink="/products" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-box mr-2"></i>Products
+    </a>
+    <a *ngIf="isLogged" routerLink="/orders" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-shopping-cart mr-2"></i>Orders
+    </a>
+    <a *ngIf="isLogged" routerLink="/tasks" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-tasks mr-2"></i>Tasks
+    </a>
+    <a *ngIf="isLogged && isRole('ADMIN')" routerLink="/users" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-user mr-2"></i>Users
+    </a>
+    <a *ngIf="isLogged" routerLink="/schedule-calendar" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-calendar-alt mr-2"></i>Schedule
+    </a>
+    <a *ngIf="isLogged" routerLink="/trainings" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-chalkboard-teacher mr-2"></i>Trainings
+    </a>
+    <a *ngIf="isLogged" routerLink="/tickets" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-ticket-alt mr-2"></i>Tickets
+    </a>
+    <a *ngIf="isLogged" routerLink="/user-profile" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
+      <i class="fas fa-user-circle mr-2"></i>Profile
+    </a>
+  </nav>
+  <div class="flex items-center space-x-4 ml-auto">
     <ng-container *ngIf="!isLoading">
-      <button *ngIf="!isLogged"><a routerLink="/login" class="bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-sign-in-alt mr-2"></i>Login</a>
+      <a routerLink="/login" class="bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300" *ngIf="!isLogged">
+        <i class="fas fa-sign-in-alt mr-2"></i>Login
+      </a>
+      <button (click)="logout()" class="bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300" *ngIf="isLogged">
+        <i class="fas fa-sign-out-alt mr-2"></i>Logout
       </button>
-      <button *ngIf="isLogged" (click)="logout()" class="bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-        <i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
     </ng-container>
   </div>
+  <nav class="md:hidden absolute top-full left-0 w-auto bg-blue-600 z-10 transition-transform transform origin-top-right" [ngClass]="{'scale-y-0': !menuOpen, 'scale-y-100': menuOpen}">
+    <div class="flex flex-col space-y-2 mt-4 p-4">
+      <!-- Mobile navigation options replicated from above -->
+      <a *ngIf="isLogged && (isRole('ADMIN') || isRole('MANAGER'))" routerLink="/dashboard" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+      </a>
+      <a *ngIf="isLogged" routerLink="/customers" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-users mr-2"></i>Customers
+      </a>
+      <a *ngIf="isLogged" routerLink="/products" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-box mr-2"></i>Products
+      </a>
+      <a *ngIf="isLogged" routerLink="/orders" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-shopping-cart mr-2"></i>Orders
+      </a>
+      <a *ngIf="isLogged" routerLink="/tasks" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-tasks mr-2"></i>Tasks
+      </a>
+      <a *ngIf="isLogged && isRole('ADMIN')" routerLink="/users" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-user mr-2"></i>Users
+      </a>
+      <a *ngIf="isLogged" routerLink="/schedule-calendar" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-calendar-alt mr-2"></i>Schedule
+      </a>
+      <a *ngIf="isLogged" routerLink="/trainings" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-chalkboard-teacher mr-2"></i>Trainings
+      </a>
+      <a *ngIf="isLogged" routerLink="/tickets" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-ticket-alt mr-2"></i>Tickets
+      </a>
+      <a *ngIf="isLogged" routerLink="/user-profile" (click)="navigateAndCloseMenu()" class="flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300">
+        <i class="fas fa-user-circle mr-2"></i>Profile
+      </a>
+    </div>
+  </nav>
 </header>

@@ -27,6 +27,8 @@ export class UserProfileComponent implements OnInit {
   errorMessage: string | null = null;
   lastLoginTime: Date | null = null;
   isLoading: boolean = true;
+  defaultImage = 'https://img.freepik.com/photos-gratuite/portrait-jeune-homme-affaires-moustache-lunettes-rendu-3d_1142-51509.jpg?w=740&t=st=1718797177~exp=1718797777~hmac=b22839f330ca8ff8233e9daecd29bfafccb0a3788f670be5a1bb938798e18db1';
+
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {

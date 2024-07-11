@@ -13,3 +13,39 @@ header {
     }
   }
 }
+.header-container {
+  position: relative;
+  z-index: 10;
+
+  .menu-toggle {
+    @apply md:hidden text-white mr-2;
+  }
+
+  .desktop-nav {
+    @apply hidden md:flex space-x-4;
+  }
+
+  .mobile-nav {
+    @apply md:hidden absolute top-full left-0 w-auto bg-blue-600 z-10 transition-transform transform origin-top-right;
+    transform-origin: top center;
+    transition: transform 0.3s ease-in-out;
+
+    &.scale-y-0 {
+      transform: scaleY(0);
+    }
+
+    &.scale-y-100 {
+      transform: scaleY(1);
+    }
+
+    .menu-items {
+      @apply flex flex-col space-y-2 mt-4 p-4;
+    }
+
+    .menu-item {
+      @apply flex items-center justify-center bg-white text-blue-600 px-2 py-1 rounded hover:bg-gray-200 transition duration-300;
+    }
+  }
+}
+
+

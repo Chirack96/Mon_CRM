@@ -16,6 +16,7 @@ import { HumanResourcesComponent } from "./human-ressources/human-ressources.com
 import {ScheduleCalendarComponent} from "./schedule-calendar/schedule-calendar.component";
 import {UserProfileComponent} from "./user-profile/user-profile.component";
 import {HomeComponent} from "./home/home.component";
+import {TrainingComponent} from "./training/training.component";
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -29,9 +30,10 @@ export const routes: Routes = [
   { path: 'tickets', component: TicketsComponent, canActivate: [AuthGuard] },
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard] },
   { path: 'tasks', component: TaskComponent, canActivate: [AuthGuard] },
-  { path: 'user-logs', component: UserLogsComponent, canActivate: [AuthGuard], data: { role: 'ADMIN' } }, // Supposons que nous ayons ajouté canActivate ici
-  { path: 'human-resources', component: HumanResourcesComponent, canActivate: [AuthGuard] },
+  { path: 'user-logs', component: UserLogsComponent, canActivate: [AuthGuard] }, // Supposons que nous ayons ajouté canActivate ici
+  { path: 'human-resources', component: HumanResourcesComponent, canActivate: [AuthGuard], data: { role: 'ADMIN' }},
   {path: 'schedule-calendar', component: ScheduleCalendarComponent, canActivate: [AuthGuard]},
+  {path: 'trainings', component: TrainingComponent, canActivate: [AuthGuard]},
   {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
   {path: '', component: HomeComponent},
   { path: '**', redirectTo: '' }

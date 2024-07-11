@@ -1,4 +1,4 @@
-<aside class="w-64 h-full bg-white shadow-lg rounded-lg overflow-y-auto text-gray-800" id="sidebar">
+<aside class="md:w-64 h-full bg-white shadow-lg rounded-lg overflow-y-auto text-gray-800 md:relative fixed md:static md:transform-none transform transition-transform duration-300 ease-in-out" [ngClass]="{'-translate-x-full': !isOpen && !isLargeScreen(), 'translate-x-0': isOpen || isLargeScreen()}">
   <div class="text-center p-4">
     <div class="mb-4">
       <img class="h-24 w-24 rounded-full mx-auto shadow-lg transition-transform transform hover:scale-110" [src]="getUserImage()" alt="User Profile Picture" height="800" width="800">
@@ -6,66 +6,65 @@
       <p class="text-lg text-gray-600">{{ user?.groupe }}</p>
     </div>
   </div>
-
   <div class="p-4">
     <nav>
       <ul class="space-y-4">
         <li>
-          <a routerLink="/dashboard" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+          <a *ngIf="isRole('ADMIN') || isRole('MANAGER')" routerLink="/dashboard" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-tachometer-alt w-6 h-6 mr-2"></i>
             Dashboard
           </a>
         </li>
         <li>
-          <a routerLink="/tasks" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+          <a routerLink="/tasks" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-tasks w-6 h-6 mr-2"></i>
             Tasks
           </a>
         </li>
-        <li>
-          <a *ngIf="isRole('ADMIN')" routerLink="/user-logs" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+        <li *ngIf="isRole('ADMIN')">
+          <a routerLink="/user-logs" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-clipboard-list w-6 h-6 mr-2"></i>
             Logs
           </a>
         </li>
-        <li>
-          <a *ngIf="isRole('ADMIN')" routerLink="/users" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+        <li *ngIf="isRole('ADMIN')">
+          <a routerLink="/users" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-address-book w-6 h-6 mr-2"></i>
             Contacts
           </a>
         </li>
         <li>
-          <a routerLink="/reports" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+          <a routerLink="/reports" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-chart-bar w-6 h-6 mr-2"></i>
             Reports
           </a>
         </li>
         <li>
-          <a routerLink="/settings" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+          <a routerLink="/settings" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-cogs w-6 h-6 mr-2"></i>
             Settings
           </a>
         </li>
         <li>
-          <a routerLink="/sales" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+          <a routerLink="/products" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-dollar-sign w-6 h-6 mr-2"></i>
             Sales
           </a>
         </li>
         <li>
-          <a routerLink="/marketing" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+          <a routerLink="/products" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-bullhorn w-6 h-6 mr-2"></i>
             Marketing
           </a>
         </li>
         <li>
-          <a routerLink="/human-resources" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+          <a *ngIf="isRole('ADMIN') || isRole('MANAGER')" routerLink="/human-resources" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-users w-6 h-6 mr-2"></i>
             Human Resources
           </a>
         </li>
         <li>
-          <a routerLink="/support" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200">
+          <a routerLink="/tasks" class="flex items-center text-gray-700 hover:text-blue-600 transition-colors duration-200" (click)="close()">
             <i class="fas fa-life-ring w-6 h-6 mr-2"></i>
             Support
           </a>

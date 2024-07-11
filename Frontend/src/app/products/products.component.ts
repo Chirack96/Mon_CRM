@@ -4,7 +4,7 @@ import { Product } from '../models/product.model';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
-import {AuthService} from "../services/auth.service";
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-products',
@@ -36,6 +36,8 @@ export class ProductsComponent implements OnInit {
   categories = ['Electromenager', 'Informatique', 'Furniture', 'Clothing', 'Books', 'Sports', 'Beauty'];
   selectedProduct: Product | null = null;
   userRole: string = '';
+  alertMessage: string | null = null;
+  alertType: 'success' | 'error' | null = null;
 
   constructor(private productService: ProductService, private authService: AuthService) { }
 
@@ -52,6 +54,7 @@ export class ProductsComponent implements OnInit {
       this.filteredProducts = this.products;
     } catch (error) {
       console.error('Error fetching products', error);
+      this.showAlert('Error fetching products.', 'error');
     }
   }
 
@@ -62,18 +65,22 @@ export class ProductsComponent implements OnInit {
       this.filteredProducts = this.products;
       this.newProduct = { id: 0, name: '', description: '', price: 0, category: '', productCode: '', stock: 0 }; // Reset form
       this.showAddProductForm = false; // Hide form after creation
+      this.showAlert('Product created successfully!', 'success');
     } catch (error) {
       console.error('Error creating product', error);
+      this.showAlert('Failed to create product.', 'error');
     }
   }
 
   async deleteProduct(id: number) {
     try {
       await this.productService.deleteProduct(id);
-      this.products = this.products.filter(product => product.id !== id);
+      this.products = this.products.filter(p => p.id !== id);
       this.filteredProducts = this.products;
+      this.showAlert('Product deleted successfully!', 'success');
     } catch (error) {
       console.error('Error deleting product', error);
+      this.showAlert('Failed to delete product.', 'error');
     }
   }
 
@@ -88,8 +95,10 @@ export class ProductsComponent implements OnInit {
         }
         this.showEditProductModal = false;
         this.selectedProduct = null;
+        this.showAlert('Product updated successfully!', 'success');
       } catch (error) {
         console.error('Error updating product', error);
+        this.showAlert('Failed to update product.', 'error');
       }
     }
   }
@@ -124,5 +133,14 @@ export class ProductsComponent implements OnInit {
 
   isRole(role: string): boolean {
     return this.userRole === role;
+  }
+
+  showAlert(message: string, type: 'success' | 'error') {
+    this.alertMessage = message;
+    this.alertType = type;
+    setTimeout(() => {
+      this.alertMessage = null;
+      this.alertType = null;
+    }, 3000);
   }
 }

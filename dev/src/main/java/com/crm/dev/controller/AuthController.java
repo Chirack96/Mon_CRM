@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost")
 @Validated
 public class AuthController {
 
@@ -120,8 +120,8 @@ public class AuthController {
             response.addCookie(cookie);
 
             // Ajouter les en-têtes CORS
-            response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
-            response.setHeader("Access-Control-Allow-Credentials", "true");
+            //response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+            //response.setHeader("Access-Control-Allow-Credentials", "true");
 
             // Enregistrer le succès de la connexion
             userLogService.logUserLogin(user.getId(), user.getEmail(), "Login successful");

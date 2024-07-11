@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { Order } from '../models/order.model';
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderService {
-  private baseUrl = 'http://localhost:8080/api/orders';
+  private baseUrl = `${environment.apiUrl}/orders`;
 
   constructor() {}
 
@@ -15,6 +16,7 @@ export class OrderService {
       const response = await axios.get<Order[]>(this.baseUrl, {
         withCredentials: true
       });
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error('Failed to fetch orders:', error);

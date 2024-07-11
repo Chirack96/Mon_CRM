@@ -1,8 +1,12 @@
 package com.crm.dev.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
+
+import java.util.Set;
 
 @Setter
 @Getter
@@ -31,4 +35,7 @@ public class Product {
 
     @Column(nullable = false, unique = true)
     private String productCode;
+
+    @Column(nullable = false)
+    private boolean deleted = false; // Champ pour suppression logique;
 }

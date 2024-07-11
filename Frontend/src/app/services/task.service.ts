@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { Task, Comment, Attachment } from '../models/task.model';
+import {environment} from "../../environments/environment";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private baseUrl = 'http://localhost:8080/api/tasks';
-  private commentsUrl = 'http://localhost:8080/api/comments';
-  private attachmentsUrl = 'http://localhost:8080/api/attachments';
+  private baseUrl = `${environment.apiUrl}/tasks`;
+  private commentsUrl = `${environment.apiUrl}/comments`;
+  private attachmentsUrl = `${environment.apiUrl}/attachments`;
 
   constructor() {}
 

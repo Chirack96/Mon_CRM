@@ -1,21 +1,33 @@
 <div class="p-4 flex flex-col flex-grow">
+  <!-- Alert Message -->
+  <div *ngIf="showAlert" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+    <div class="flex items-center justify-between px-4 py-2 rounded shadow-md"
+         [ngClass]="{
+           'bg-green-500 text-white': alertType === 'success',
+           'bg-red-500 text-white': alertType === 'error'
+         }">
+      <span>{{ alertMessage }}</span>
+      <button class="text-2xl leading-none" (click)="showAlert = false">&times;</button>
+    </div>
+  </div>
+
   <div class="p-4 rounded-lg dark:border-gray-700 flex flex-col flex-grow">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-semibold text-gray-700">Orders</h2>
-      <div class="flex items-center space-x-4">
-        <input type="text" placeholder="Search by email, product, name, price, date, etc." class="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+    <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4 md:mb-0">Orders</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
+        <input type="text" placeholder="Search by email, product, name, price, date, etc." class="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 w-full"
                [(ngModel)]="searchQuery" (input)="searchOrders()">
-        <button (click)="showAddOrderForm = !showAddOrderForm" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105">
+        <button (click)="showAddOrderForm = !showAddOrderForm" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105 w-full">
           {{ showAddOrderForm ? 'Cancel' : 'Add Order' }}
         </button>
       </div>
     </div>
 
-    <div class="mb-4 space-x-2 flex">
-      <button (click)="currentTable = 'all'" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-transform transform hover:scale-105">All Orders</button>
-      <button (click)="currentTable = 'validated'" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-transform transform hover:scale-105">Validated Orders</button>
-      <button (click)="currentTable = 'pending'" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-transform transform hover:scale-105">Pending Orders</button>
-      <button (click)="currentTable = 'cancelled'" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-transform transform hover:scale-105">Cancelled Orders</button>
+    <div class="mb-4 grid grid-cols-2 md:flex md:space-x-2 gap-2">
+      <button (click)="currentTable = 'all'" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-transform transform hover:scale-105 w-full md:w-auto">All Orders</button>
+      <button (click)="currentTable = 'validated'" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-transform transform hover:scale-105 w-full md:w-auto">Validated Orders</button>
+      <button (click)="currentTable = 'pending'" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-transform transform hover:scale-105 w-full md:w-auto">Pending Orders</button>
+      <button (click)="currentTable = 'cancelled'" class="bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-transform transform hover:scale-105 w-full md:w-auto">Cancelled Orders</button>
     </div>
 
     <div *ngIf="showAddOrderForm" class="mb-4">
@@ -63,7 +75,7 @@
         {{ noResultsMessage }}
       </div>
 
-      <!-- All Orders Table -->
+      <!-- Orders Tables -->
       <div *ngIf="currentTable === 'all'" class="table-container p-4 rounded-lg shadow-md border bg-white">
         <h3 class="text-xl font-semibold mb-4">All Orders</h3>
         <div class="overflow-x-auto">
@@ -105,7 +117,6 @@
         </div>
       </div>
 
-      <!-- Validated Orders Table -->
       <div *ngIf="currentTable === 'validated'" class="table-container p-4 rounded-lg shadow-md border bg-white">
         <h3 class="text-xl font-semibold mb-4">Validated Orders</h3>
         <div class="overflow-x-auto">
@@ -124,7 +135,7 @@
                   </div>
                   <p class="text-gray-700">Order Date: {{ order.orderDate }}</p>
                   <p class="text-gray-700">Status: {{ order.status }}</p>
-                  <p class="text-gray-700">Total Price: {{ order.totalPrice | currency }}</p>
+                  <p class="text-gray-700">Total Price: € {{ order.totalPrice }}</p>
                   <ul>
                     <li *ngFor="let op of order.orderProducts">{{ op.product?.name }} - Quantity: {{ op.quantity }}</li>
                   </ul>
@@ -139,7 +150,6 @@
         </div>
       </div>
 
-      <!-- Pending Orders Table -->
       <div *ngIf="currentTable === 'pending'" class="table-container p-4 rounded-lg shadow-md border bg-white">
         <h3 class="text-xl font-semibold mb-4">Pending Orders</h3>
         <div class="overflow-x-auto">
@@ -158,7 +168,7 @@
                   </div>
                   <p class="text-gray-700">Order Date: {{ order.orderDate }}</p>
                   <p class="text-gray-700">Status: {{ order.status }}</p>
-                  <p class="text-gray-700">Total Price: {{ order.totalPrice | currency }}</p>
+                  <p class="text-gray-700">Total Price: € {{ order.totalPrice }}</p>
                   <ul>
                     <li *ngFor="let op of order.orderProducts">{{ op.product?.name }} - Quantity: {{ op.quantity }}</li>
                   </ul>
@@ -174,7 +184,6 @@
         </div>
       </div>
 
-      <!-- Cancelled Orders Table -->
       <div *ngIf="currentTable === 'cancelled'" class="table-container p-4 rounded-lg shadow-md border bg-white">
         <h3 class="text-xl font-semibold mb-4">Cancelled Orders</h3>
         <div class="overflow-x-auto">
@@ -193,7 +202,7 @@
                   </div>
                   <p class="text-gray-700">Order Date: {{ order.orderDate }}</p>
                   <p class="text-gray-700">Status: {{ order.status }}</p>
-                  <p class="text-gray-700">Total Price: {{ order.totalPrice | currency }}</p>
+                  <p class="text-gray-700">Total Price: € {{ order.totalPrice }}</p>
                   <ul>
                     <li *ngFor="let op of order.orderProducts">{{ op.product?.name }} - Quantity: {{ op.quantity }}</li>
                   </ul>
@@ -212,7 +221,7 @@
 </div>
 
 <!-- Modal pour la modification des commandes -->
-<div *ngIf="showEditModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+<div *ngIf="showEditModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
   <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg relative w-full max-w-lg">
     <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 dark:hover:text-gray-300" (click)="closeEditModal()">
       <i class="fas fa-times"></i>

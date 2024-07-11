@@ -2,13 +2,14 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import axios from 'axios';
 import { User } from '../models/user.model';
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private baseUrl = 'http://localhost:8080/api/users';
-  private authUrl = 'http://localhost:8080/api/auth';
+  private baseUrl = `${environment.apiUrl}/users`;
+  private authUrl = `${environment.apiUrl}/auth`;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 

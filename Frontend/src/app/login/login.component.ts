@@ -59,7 +59,7 @@ export class LoginComponent {
         const success = await this.authService.verifyCode(this.userId, this.verificationCode);
         if (success) {
           this.successMessage = 'You are successfully logged in. Redirecting to dashboard...';
-          await this.router.navigate(['/dashboard']);
+          await this.router.navigate(['/orders']);
         } else {
           this.errorMessage = 'Verification failed. Please check the code and try again.';
         }

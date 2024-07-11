@@ -1,46 +1,55 @@
-<div *ngIf="isLoading; else content">
+<div *ngIf="isLoading; else content" class="flex items-center justify-center h-full">
   <p class="text-white text-lg animate-pulse">Chargement du profil utilisateur...</p>
 </div>
 <ng-template #content>
   <div *ngIf="user" class="max-w-4xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6 text-indigo-500">Mon Profil</h1>
-    <div class="bg-white shadow-2xl rounded-lg p-6 mb-6 transform transition duration-500 hover:scale-105 flex justify-between items-center">
-      <div>
-        <p class="mb-2 text-gray-700"><strong>Nom :</strong> {{ user.lastname }}</p>
-        <p class="mb-2 text-gray-700"><strong>Prenom :</strong> {{ user.firstname | uppercase }}</p>
-        <p class="mb-2 text-gray-700"><strong>Email :</strong> {{ user.email }}</p>
-        <p class="text-gray-700"><strong>Dernière connexion :</strong> {{ lastLoginTime ? (lastLoginTime | date:'short') : 'Jamais' }}</p>
-        <button class="mt-4 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">Modifier le Profil</button>
-      </div>
-      <div class="relative">
-        <img [src]="user.image || 'path/to/default/image.jpg'" alt="User Photo" class="w-32 h-32 rounded-full border-2 border-indigo-500 object-cover">
+    <h1 class="text-3xl font-bold mb-6 text-indigo-500">Profil</h1>
+    <div class="bg-white shadow-2xl rounded-lg p-6 mb-6 transform transition duration-500 hover:scale-105 flex flex-col items-center space-y-4 md:space-y-0 md:flex-row md:justify-between md:items-center md:space-x-4">
+      <div class="relative md:order-2">
+        <img [src]="user.image || defaultImage" alt="User Photo" class="w-32 h-32 rounded-full border-2 border-indigo-500 object-cover">
         <button class="absolute bottom-0 right-0 bg-white text-indigo-500 p-2 rounded-full shadow-md hover:bg-indigo-500 hover:text-white transition duration-300 ease-in-out">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v4m0 0h4m-4 0H8m6 6v4m0 0h4m-4 0H8m6-10a2 2 0 112-2 2 2 0 01-2 2zm0 8a2 2 0 112-2 2 2 0 01-2 2zm0 4a2 2 0 112-2 2 2 0 01-2 2z"></path>
           </svg>
         </button>
       </div>
+      <div class="flex-1 md:order-1">
+        <p class="mb-2 text-gray-700"><strong>Lastname :</strong> {{ user.lastname }}</p>
+        <p class="mb-2 text-gray-700"><strong>Firstname :</strong> {{ user.firstname | uppercase }}</p>
+        <p class="mb-2 text-gray-700"><strong>Email :</strong> {{ user.email }}</p>
+        <p class="text-gray-700"><strong>Last login :</strong> {{ lastLoginTime ? (lastLoginTime | date:'short') : 'Jamais' }}</p>
+        <button class="mt-4 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 w-full md:w-auto">Modifier le Profil</button>
+      </div>
     </div>
 
     <div *ngIf="trainings.length > 0; else noTrainings" class="mb-6">
       <h2 class="text-2xl font-semibold mb-4 text-white">Formations</h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-full bg-white shadow-2xl rounded-lg">
-          <thead class="bg-indigo-200">
-          <tr>
-            <th class="py-2 px-4">Titre</th>
-            <th class="py-2 px-4">Description</th>
-            <th class="py-2 px-4">Date</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let training of trainings" class="hover:bg-indigo-100 transition duration-300">
-            <td class="border px-4 py-2">{{ training.title }}</td>
-            <td class="border px-4 py-2">{{ training.description }}</td>
-            <td class="border px-4 py-2">{{ training.date | date }}</td>
-          </tr>
-          </tbody>
-        </table>
+      <div class="hidden md:block">
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white shadow-2xl rounded-lg">
+            <thead class="bg-indigo-200">
+            <tr>
+              <th class="py-2 px-4">Title</th>
+              <th class="py-2 px-4">Description</th>
+              <th class="py-2 px-4">Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let training of trainings" class="hover:bg-indigo-100 transition duration-300">
+              <td class="border px-4 py-2">{{ training.title }}</td>
+              <td class="border px-4 py-2">{{ training.description }}</td>
+              <td class="border px-4 py-2">{{ training.date | date }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="block md:hidden">
+        <div *ngFor="let training of trainings" class="mb-4 p-4 bg-white shadow-2xl rounded-lg">
+          <p class="text-gray-700"><strong>Title :</strong> {{ training.title }}</p>
+          <p class="text-gray-700"><strong>Description :</strong> {{ training.description }}</p>
+          <p class="text-gray-700"><strong>Date :</strong> {{ training.date | date }}</p>
+        </div>
       </div>
     </div>
     <ng-template #noTrainings>
@@ -49,27 +58,38 @@
 
     <div *ngIf="tasksAssigned.length > 0; else noTasksAssigned">
       <h2 class="text-2xl font-semibold mb-4 text-white">Tâches Assignées</h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-full bg-white shadow-2xl rounded-lg">
-          <thead class="bg-pink-200">
-          <tr>
-            <th class="py-2 px-4">Titre</th>
-            <th class="py-2 px-4">Description</th>
-            <th class="py-2 px-4">Date d'échéance</th>
-            <th class="py-2 px-4">Priorité</th>
-            <th class="py-2 px-4">Statut</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let task of tasksAssigned" class="hover:bg-pink-100 transition duration-300">
-            <td class="border px-4 py-2">{{ task.title }}</td>
-            <td class="border px-4 py-2">{{ task.description }}</td>
-            <td class="border px-4 py-2">{{ task.dueDate | date }}</td>
-            <td class="border px-4 py-2">{{ task.priority }}</td>
-            <td class="border px-4 py-2">{{ task.status }}</td>
-          </tr>
-          </tbody>
-        </table>
+      <div class="hidden md:block">
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white shadow-2xl rounded-lg">
+            <thead class="bg-pink-200">
+            <tr>
+              <th class="py-2 px-4">Title</th>
+              <th class="py-2 px-4">Description</th>
+              <th class="py-2 px-4">Due date</th>
+              <th class="py-2 px-4">Priority</th>
+              <th class="py-2 px-4">Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let task of tasksAssigned" class="hover:bg-pink-100 transition duration-300">
+              <td class="border px-4 py-2">{{ task.title }}</td>
+              <td class="border px-4 py-2">{{ task.description }}</td>
+              <td class="border px-4 py-2">{{ task.dueDate | date }}</td>
+              <td class="border px-4 py-2">{{ task.priority }}</td>
+              <td class="border px-4 py-2">{{ task.status }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="block md:hidden">
+        <div *ngFor="let task of tasksAssigned" class="mb-4 p-4 bg-white shadow-2xl rounded-lg">
+          <p class="text-gray-700"><strong>Title :</strong> {{ task.title }}</p>
+          <p class="text-gray-700"><strong>Description :</strong> {{ task.description }}</p>
+          <p class="text-gray-700"><strong>Due date :</strong> {{ task.dueDate | date }}</p>
+          <p class="text-gray-700"><strong>Priority :</strong> {{ task.priority }}</p>
+          <p class="text-gray-700"><strong>Status :</strong> {{ task.status }}</p>
+        </div>
       </div>
     </div>
     <ng-template #noTasksAssigned>

@@ -23,7 +23,7 @@ export class TicketsComponent implements OnInit {
   constructor(private ticketService: TicketService) { }
 
   ngOnInit(): void {
-    this.fetchTickets();
+    this.fetchTickets().then(r => r);
   }
 
   async fetchTickets() {

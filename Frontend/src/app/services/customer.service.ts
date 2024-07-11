@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { Customer } from '../models/customer.model';
 import {Order} from "../models/order.model";
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerService {
-  private baseUrl = 'http://localhost:8080/api/customers';
+  private baseUrl = `${environment.apiUrl}/customers`;
 
   constructor() { }
 

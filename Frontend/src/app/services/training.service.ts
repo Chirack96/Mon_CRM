@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Training } from '../models/training.model';
 import axios from "axios";
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TrainingService {
-  private baseUrl = 'http://localhost:8080/api/trainings';
+  private baseUrl = `${environment.apiUrl}/trainings`;
 
   async getTrainings(): Promise<Training[]> {
     try {

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
-import { NgIf } from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -10,13 +10,15 @@ import { Subscription } from 'rxjs';
   templateUrl: './header.component.html',
   imports: [
     RouterLink,
-    NgIf
+    NgIf,
+    NgClass
   ],
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isLogged = false;
   isLoading = true;
+  menuOpen = false;
   userRole = '';
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -46,5 +48,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
   isRole(role: string): boolean {
     return this.userRole === role;
+  }
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  navigateAndCloseMenu() {
+    this.menuOpen = false;
   }
 }

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { Product } from '../models/product.model';
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private baseUrl = 'http://localhost:8080/api/products';
+  private baseUrl = `${environment.apiUrl}/products`;
 
   constructor() { }
 
@@ -14,6 +15,7 @@ export class ProductService {
     const response = await axios.get<Product[]>(this.baseUrl, {
       withCredentials: true
     });
+    console.log(response.data);
     return response.data;
   }
 
