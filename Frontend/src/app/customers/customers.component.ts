@@ -64,6 +64,7 @@ export class CustomersComponent implements OnInit {
       this.filteredCustomers.push(createdCustomer);
       this.newCustomer = { id: 0, firstName: '', lastName: '', email: '', address: '', phoneNumber: '', createdAt: '' }; // Réinitialiser le formulaire
       this.showAddCustomerForm = false; // Masquer le formulaire après la création du client
+      await this.fetchCustomers();
       this.showAlert('Customer created successfully!', 'success');
     } catch (error) {
       console.error('Error creating customer', error);

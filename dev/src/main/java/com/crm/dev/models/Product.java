@@ -35,7 +35,4 @@ public class Product {
 
     @Column(nullable = false, unique = true)
     private String productCode;
-
-    @Column(nullable = false)
-    private boolean deleted = false; // Champ pour suppression logique;
 }
