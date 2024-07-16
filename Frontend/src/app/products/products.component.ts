@@ -65,6 +65,7 @@ export class ProductsComponent implements OnInit {
       this.filteredProducts = this.products;
       this.newProduct = { id: 0, name: '', description: '', price: 0, category: '', productCode: '', stock: 0 }; // Reset form
       this.showAddProductForm = false; // Hide form after creation
+      await this.fetchProducts();
       this.showAlert('Product created successfully!', 'success');
     } catch (error) {
       console.error('Error creating product', error);

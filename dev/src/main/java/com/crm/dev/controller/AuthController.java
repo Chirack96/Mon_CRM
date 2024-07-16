@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost")
+@CrossOrigin(origins = "http://localhost:4200,http://192.168.1.164:80,http://192.168.1.164")
 @Validated
 public class AuthController {
 
@@ -113,14 +113,14 @@ public class AuthController {
             // Créer un cookie HttpOnly pour le token
             Cookie cookie = new Cookie("auth_token", (String) token.get("token"));
             cookie.setHttpOnly(true);
-            cookie.setSecure(true); // Assurez-vous d'utiliser HTTPS
+            cookie.setSecure(false); // Définit le cookie comme sécurisé
             cookie.setPath("/"); // Définit le chemin d'accès pour le cookie
-            cookie.setMaxAge(30 * 60); // Expire après 30 minutes
+            cookie.setMaxAge(30 * 60 * 24); // Expire après 30 minutes
 
             response.addCookie(cookie);
 
             // Ajouter les en-têtes CORS
-            //response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+            //response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.164:80,http://192.168.1.164:80,http://localhost:4200");
             //response.setHeader("Access-Control-Allow-Credentials", "true");
 
             // Enregistrer le succès de la connexion
@@ -158,16 +158,19 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = new Cookie("auth_token", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false); // Change to true if using HTTPS in production
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
-        // Ajouter les en-têtes CORS
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+        // Ajouter les en-têtes CORS dynamiquement
+        String origin = request.getHeader("Origin");
+        if (origin != null && (origin.equals("http://localhost:4200") || origin.equals("http://192.168.1.164:80"))) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+        }
         response.setHeader("Access-Control-Allow-Credentials", "true");
 
         return ResponseEntity.ok("Logged out");
