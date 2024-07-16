@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200,http://192.168.1.164:80,http://192.168.1.164")
+@CrossOrigin(origins = {"http://localhost:4200", "http://192.168.1.164:80", "http://192.168.1.164"})
 @Validated
 public class AuthController {
 
@@ -72,7 +72,6 @@ public class AuthController {
         return ResponseEntity.ok(registeredUser);
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthentificationDTO authentificationDTO) {
         try {
@@ -102,7 +101,7 @@ public class AuthController {
     }
 
     @PostMapping("/verify-code")
-    public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> payload, HttpServletResponse response) {
+    public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> payload, HttpServletResponse response, HttpServletRequest request) {
         Long userId = Long.parseLong(payload.get("userId"));
         String code = payload.get("code");
 
@@ -113,15 +112,17 @@ public class AuthController {
             // Créer un cookie HttpOnly pour le token
             Cookie cookie = new Cookie("auth_token", (String) token.get("token"));
             cookie.setHttpOnly(true);
-            cookie.setSecure(false); // Définit le cookie comme sécurisé
             cookie.setPath("/"); // Définit le chemin d'accès pour le cookie
+            if (request.isSecure()) {
+                cookie.setSecure(true); // Changer à true si HTTPS est utilisé en production
+            }
             cookie.setMaxAge(30 * 60 * 24); // Expire après 30 minutes
 
             response.addCookie(cookie);
 
             // Ajouter les en-têtes CORS
-            //response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.164:80,http://192.168.1.164:80,http://localhost:4200");
-            //response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.164:80,http://192.168.1.164,http://localhost:4200");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
 
             // Enregistrer le succès de la connexion
             userLogService.logUserLogin(user.getId(), user.getEmail(), "Login successful");
@@ -156,12 +157,13 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = new Cookie("auth_token", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Change to true if using HTTPS in production
+        if (request.isSecure()) {
+            cookie.setSecure(true); // Change to true if using HTTPS in production
+        }
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
@@ -215,7 +217,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping("user-role")
+    @GetMapping("/user-role")
     public ResponseEntity<?> getUserRole(HttpServletRequest request) {
         String token = null;
         if (request.getCookies() != null) {
@@ -238,7 +240,4 @@ public class AuthController {
             return ResponseEntity.status(401).body("Not authenticated");
         }
     }
-
-
 }
-
