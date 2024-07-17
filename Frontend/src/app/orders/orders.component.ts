@@ -4,7 +4,7 @@ import { OrderService } from '../services/order.service';
 import { CustomerService } from '../services/customer.service';
 import { ProductService } from '../services/product.service';
 import { Customer, Product, Order } from '../models/order.model';
-import { CurrencyPipe, NgClass, NgForOf, NgIf } from '@angular/common';
+import {CurrencyPipe, NgClass, NgForOf, NgIf, UpperCasePipe} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from "../services/auth.service";
 
@@ -19,7 +19,8 @@ import { AuthService } from "../services/auth.service";
     NgForOf,
     NgIf,
     NgClass,
-    FormsModule
+    FormsModule,
+    UpperCasePipe
   ]
 })
 export class OrdersComponent implements OnInit {
@@ -144,6 +145,7 @@ export class OrdersComponent implements OnInit {
       this.showAddOrderForm = false;
       await this.fetchInitialData();
       this.showAlertMessage('Order created successfully!', 'success');
+      await this.fetchInitialData();
     } catch (error) {
       console.error('Error creating order:', error);
       this.showAlertMessage('Failed to create order.', 'error');
@@ -237,6 +239,7 @@ export class OrdersComponent implements OnInit {
         this.allOrders[allOrdersIndex] = updatedOrderResponse;
       }
       this.closeEditModal();
+      await this.fetchInitialData();
       this.showAlertMessage('Order updated successfully!', 'success');
     } catch (error) {
       console.error('Error updating order:', error);
