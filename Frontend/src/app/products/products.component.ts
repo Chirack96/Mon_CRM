@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../services/product.service';
 import { Product } from '../models/product.model';
-import { NgClass, NgForOf, NgIf } from '@angular/common';
+import {NgClass, NgForOf, NgIf, UpperCasePipe} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../services/auth.service';
@@ -14,7 +14,8 @@ import { AuthService } from '../services/auth.service';
     NgForOf,
     FormsModule,
     NgIf,
-    NgClass
+    NgClass,
+    UpperCasePipe
   ],
   styleUrls: ['./products.component.scss'],
   animations: [
@@ -29,7 +30,7 @@ import { AuthService } from '../services/auth.service';
 export class ProductsComponent implements OnInit {
   products: Product[] = [];
   filteredProducts: Product[] = [];
-  newProduct: Product = { id: 0, name: '', description: '', price: 0, category: '', productCode: '', stock: 0 };
+  newProduct: Product = { id: 0, name: '', description: '', price: 0, category: '', productCode: '', stock: 0};
   showAddProductForm: boolean = false;
   showEditProductModal: boolean = false;
   searchTerm: string = '';
@@ -96,6 +97,7 @@ export class ProductsComponent implements OnInit {
         }
         this.showEditProductModal = false;
         this.selectedProduct = null;
+        await this.fetchProducts();
         this.showAlert('Product updated successfully!', 'success');
       } catch (error) {
         console.error('Error updating product', error);

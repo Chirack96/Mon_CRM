@@ -46,6 +46,7 @@ public class OrderService {
         Customer customer = customerRepository.findById(orderDTO.customerId())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
         order.setCustomer(customer);
+        order.setCustomerName(customer.getFirstName() + " " + customer.getLastName()); // Initialiser customerName
         order.setOrderDate(orderDTO.orderDate());
         order.setStatus(orderDTO.status());
 
@@ -55,6 +56,7 @@ public class OrderService {
             Product product = productRepository.findById(opDTO.productId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
             orderProduct.setProduct(product);
+            orderProduct.setProductName(product.getName()); // Initialiser productName
             orderProduct.setQuantity(opDTO.quantity());
             return orderProduct;
         }).collect(Collectors.toList());
@@ -87,6 +89,7 @@ public class OrderService {
             }
 
             orderProduct.setProduct(productOptional.get());
+            orderProduct.setProductName(productOptional.get().getName()); // Initialiser productName
             orderProduct.setQuantity(orderProductDTO.quantity());
             existingOrder.getOrderProducts().add(orderProduct);
         }

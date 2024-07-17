@@ -35,7 +35,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <select formControlName="customerId" required class="p-2 border rounded w-full">
             <option value="" disabled>Select Customer</option>
-            <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.firstName }} {{ customer.lastName }}</option>
+            <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.firstName | uppercase }} {{ customer.lastName | uppercase }}</option>
           </select>
           <div *ngIf="orderForm.controls['customerId'].invalid && orderForm.controls['customerId'].touched" class="text-red-600">Customer is required.</div>
 
@@ -43,7 +43,7 @@
             <div *ngFor="let orderProduct of orderProducts.controls; let i=index" [formGroupName]="i" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <select formControlName="productId" required class="p-2 border rounded w-full">
                 <option value="" disabled>Select Product</option>
-                <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+                <option *ngFor="let product of products" [value]="product.id">{{ product.name | uppercase }}</option>
               </select>
               <div *ngIf="orderProduct.get('productId')?.invalid && orderProduct.get('productId')?.touched" class="text-red-600">Product is required.</div>
 
@@ -94,7 +94,7 @@
                       'fa-exclamation-circle text-yellow-600': order.status === 'PENDING',
                       'fa-times-circle text-red-600': order.status === 'CANCEL'
                     }"></i>
-                    <span class="ml-2">{{ order.customer?.firstName }} {{ order.customer?.lastName }}</span>
+                    <span class="ml-2">{{ order.customer?.firstName | uppercase }} {{ order.customer?.lastName | uppercase }}</span>
                   </h3>
                   <button (click)="openEditModal(order)" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-edit"></i>
@@ -104,7 +104,7 @@
                 <p class="text-gray-700">Status: {{ order.status }}</p>
                 <p class="text-gray-700">Total Price: € {{ order.totalPrice }}</p>
                 <ul>
-                  <li *ngFor="let op of order.orderProducts">{{ op.product?.name }} - Quantity: {{ op.quantity }}</li>
+                  <li *ngFor="let op of order.orderProducts">{{ op.product?.name | uppercase }} - Quantity: {{ op.quantity }}</li>
                 </ul>
                 <div class="mt-4 flex space-x-2">
                   <button *ngIf="order.status === 'VALIDATED' || order.status === 'PENDING'" (click)="updateOrderStatus(order.id, 'CANCEL')" class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-600 transition-transform transform hover:scale-105">Cancel</button>
@@ -160,7 +160,7 @@
                   <div class="flex justify-between items-start">
                     <h3 class="text-xl font-semibold flex items-center">
                       <i class="fas fa-exclamation-circle text-yellow-600"></i>
-                      <span class="ml-2">{{ order.customer?.firstName }} {{ order.customer?.lastName }}</span>
+                      <span class="ml-2">{{ order.customer?.firstName | uppercase }} {{ order.customer?.lastName | uppercase }}</span>
                     </h3>
                     <button (click)="openEditModal(order)" class="text-gray-500 hover:text-gray-700">
                       <i class="fas fa-edit"></i>
@@ -170,7 +170,7 @@
                   <p class="text-gray-700">Status: {{ order.status }}</p>
                   <p class="text-gray-700">Total Price: € {{ order.totalPrice }}</p>
                   <ul>
-                    <li *ngFor="let op of order.orderProducts">{{ op.product?.name }} - Quantity: {{ op.quantity }}</li>
+                    <li *ngFor="let op of order.orderProducts">{{ op.product?.name | uppercase }} - Quantity: {{ op.quantity }}</li>
                   </ul>
                   <div class="mt-4 flex space-x-2">
                     <button (click)="updateOrderStatus(order.id, 'CANCEL')" class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-600 transition-transform transform hover:scale-105">Cancel</button>
@@ -194,7 +194,7 @@
                   <div class="flex justify-between items-start">
                     <h3 class="text-xl font-semibold flex items-center">
                       <i class="fas fa-times-circle text-red-600"></i>
-                      <span class="ml-2">{{ order.customer?.firstName }} {{ order.customer?.lastName }}</span>
+                      <span class="ml-2">{{ order.customer?.firstName | uppercase }} {{ order.customer?.lastName | uppercase }}</span>
                     </h3>
                     <button (click)="openEditModal(order)" class="text-gray-500 hover:text-gray-700">
                       <i class="fas fa-edit"></i>
@@ -204,7 +204,7 @@
                   <p class="text-gray-700">Status: {{ order.status }}</p>
                   <p class="text-gray-700">Total Price: € {{ order.totalPrice }}</p>
                   <ul>
-                    <li *ngFor="let op of order.orderProducts">{{ op.product?.name }} - Quantity: {{ op.quantity }}</li>
+                    <li *ngFor="let op of order.orderProducts">{{ op.product?.name | uppercase }} - Quantity: {{ op.quantity }}</li>
                   </ul>
                   <div class="mt-4 flex space-x-2">
                     <button (click)="updateOrderStatus(order.id, 'VALIDATED')" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105">Validate</button>
@@ -232,7 +232,7 @@
         <label class="block text-gray-700">Customer</label>
         <select formControlName="customerId" class="p-2 border rounded w-full">
           <option value="" disabled>Select Customer</option>
-          <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.firstName }} {{ customer.lastName }}</option>
+          <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.firstName | uppercase }} {{ customer.lastName | uppercase }}</option>
         </select>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -252,7 +252,7 @@
           <label class="block text-gray-700">Product</label>
           <select formControlName="productId" class="p-2 border rounded w-full">
             <option value="" disabled>Select Product</option>
-            <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+            <option *ngFor="let product of products" [value]="product.id">{{ product.name | uppercase }}</option>
           </select>
           <label class="block text-gray-700">Quantity</label>
           <input type="number" formControlName="quantity" class="p-2 border rounded w-full">

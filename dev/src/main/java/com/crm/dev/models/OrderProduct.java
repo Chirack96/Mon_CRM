@@ -23,5 +23,7 @@ public class OrderProduct {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    private String productName;  // Ajout du champ productName
+
     private int quantity;
 }

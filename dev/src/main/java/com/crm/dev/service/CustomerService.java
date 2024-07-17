@@ -1,13 +1,13 @@
 package com.crm.dev.service;
 
 import com.crm.dev.models.Customer;
+import com.crm.dev.models.Order;
 import com.crm.dev.repository.CustomerRepository;
+import com.crm.dev.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -15,35 +15,32 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     public List<Customer> findAllCustomers() {
-        return customerRepository.findAll();
+        return customerRepository.findByActiveTrue();
     }
 
     public Customer saveCustomer(Customer customer) {
         return customerRepository.save(customer);
     }
 
-    public Optional<Customer> getCustomerById(Long id) {
-        return customerRepository.findById(id);
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + id));
     }
 
-    public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
-    }
+    public void deactivateCustomer(Long id) {
+        Customer customer = getCustomerById(id);
+        customer.setActive(false);
+        customerRepository.save(customer);
 
-    public List<Customer> createMultipleCustomers(int count) {
-        List<Customer> customers = new ArrayList<>();
-        for (int i = 1; i <= count; i++) {
-            Customer customer = new Customer();
-            customer.setFirstName("Jeany" + i);
-            customer.setLastName("Duponyt" + i);
-            customer.setEmail("jean.duponyt" + i + "@eyxample.com");
-            customer.setAddress("123 rue de la rue");
-            customer.setPhoneNumber("1234567890");
-
-            customers.add(customerRepository.save(customer));
+        List<Order> orders = orderRepository.findByCustomerId(id);
+        for (Order order : orders) {
+            order.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
+            // Ne pas définir customer à null, conserver la référence
         }
-        return customers;
+        orderRepository.saveAll(orders);
     }
-
 }

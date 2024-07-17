@@ -28,19 +28,19 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
-        Optional<Customer> customer = customerService.getCustomerById(id);
+        Optional<Customer> customer = Optional.ofNullable(customerService.getCustomerById(id));
         return customer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
+        customerService.deactivateCustomer(id);
         return ResponseEntity.ok().build();
     }
 
-   @PostMapping("/create-multiple")
-    public ResponseEntity<List<Customer>> createMultipleCustomers(@RequestParam int count) {
-        List<Customer> customers = customerService.createMultipleCustomers(count);
-        return ResponseEntity.ok(customers);
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
+        customer.setId(id);
+        return ResponseEntity.ok(customerService.saveCustomer(customer));
     }
 }

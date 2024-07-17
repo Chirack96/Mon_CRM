@@ -22,6 +22,8 @@ public class Order {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    private String customerName;  // Ajout du champ customerName
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<OrderProduct> orderProducts = new ArrayList<>();

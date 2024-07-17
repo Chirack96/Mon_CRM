@@ -32,4 +32,7 @@ public class Customer {
 
     @Column(nullable = false)
     private LocalDate createdAt;
+
+    @Column(nullable = false)
+    private boolean active = true;  // Ajout du champ active
 }

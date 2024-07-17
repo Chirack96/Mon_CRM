@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CustomerService } from '../services/customer.service';
 import { Customer } from '../models/customer.model';
-import { DatePipe, NgClass, NgForOf, NgIf } from "@angular/common";
+import {DatePipe, NgClass, NgForOf, NgIf, UpperCasePipe} from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from "../services/auth.service";
@@ -15,7 +15,8 @@ import { AuthService } from "../services/auth.service";
     FormsModule,
     NgIf,
     DatePipe,
-    NgClass
+    NgClass,
+    UpperCasePipe
   ],
   styleUrls: ['./customers.component.scss'],
   animations: [
@@ -64,6 +65,7 @@ export class CustomersComponent implements OnInit {
       this.filteredCustomers.push(createdCustomer);
       this.newCustomer = { id: 0, firstName: '', lastName: '', email: '', address: '', phoneNumber: '', createdAt: '' }; // Réinitialiser le formulaire
       this.showAddCustomerForm = false; // Masquer le formulaire après la création du client
+      await this.fetchCustomers();
       this.showAlert('Customer created successfully!', 'success');
     } catch (error) {
       console.error('Error creating customer', error);
@@ -82,6 +84,7 @@ export class CustomersComponent implements OnInit {
         }
         this.showEditCustomerModal = false;
         this.selectedCustomer = null;
+        await this.fetchCustomers();
         this.showAlert('Customer updated successfully!', 'success');
       }
     } catch (error) {
