@@ -46,15 +46,15 @@ jobs:
 
       - name: Build and push Backend (Spring Boot) Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/springboot-app:latest ./dev
+          docker build -t chirack96/springboot-app:latest ./dev
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker push ${{ secrets.DOCKER_USERNAME }}/springboot-app:latest  # Pousse l'image backend avec le bon nom
+          docker push chirack96/springboot-app:latest  # Pousse l'image backend avec le bon nom
 
       - name: Build and push Frontend (Angular) Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/angular-app:latest ./Frontend  # Utilise le bon chemin pour le frontend
+          docker build -t chirack96/angular-app:latest ./Frontend  # Utilise le bon chemin pour le frontend
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker push ${{ secrets.DOCKER_USERNAME }}/angular-app:latest  # Pousse l'image frontend avec le bon nom
+          docker push chirack96/angular-app:latest  # Pousse l'image frontend avec le bon nom
 
   deploy_to_server:
     needs: build_and_push_images
