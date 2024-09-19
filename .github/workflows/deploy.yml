@@ -22,16 +22,16 @@ jobs:
 
       - name: Merge main into production
         run: |
-          git fetch origin  # Assure que la branche production est récupérée
+          git fetch origin
           if git rev-parse --verify production; then
             git checkout production
           else
             git checkout -b production origin/production
           fi
-          git merge main --no-commit --no-ff  # Effectue la fusion sans commettre automatiquement
-          git restore --staged .github/workflows/  # Réinitialise les workflows pour ne pas les inclure dans le commit
+          git merge main --no-commit --no-ff
+          git restore --staged .github/workflows/
           git commit -m "Merge main into production, excluding workflow changes"
-          git push origin production  # Pousse la branche fusionnée
+          git push origin production
 
   build_and_push_images:
     needs: merge_to_production
@@ -42,19 +42,19 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: production
-          fetch-depth: 0  # Récupère tout l'historique et toutes les branches
+        fetch-depth: 0  # Récupère tout l'historique et toutes les branches
 
       - name: Build and push Backend (Spring Boot) Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/springboot-backend:latest ./backend
+          docker build -t chirack96/springboot-app:latest ./dev  # Utilise le bon chemin pour le backend
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker push ${{ secrets.DOCKER_USERNAME }}/springboot-backend:latest
+          docker push chirack96/springboot-app:latest  # Pousse l'image backend avec le bon nom
 
       - name: Build and push Frontend (Angular) Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/angular-frontend:latest ./frontend
+          docker build -t chirack96/angular-app:latest ./Frontend  # Utilise le bon chemin pour le frontend
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker push ${{ secrets.DOCKER_USERNAME }}/angular-frontend:latest
+          docker push chirack96/angular-app:latest  # Pousse l'image frontend avec le bon nom
 
   deploy_to_server:
     needs: build_and_push_images
