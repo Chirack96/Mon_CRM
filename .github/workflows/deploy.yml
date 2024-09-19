@@ -28,8 +28,11 @@ jobs:
           else
             git checkout -b production origin/production
           fi
-          git merge main
-          git push origin production
+          git merge main --no-commit --no-ff  # Effectue la fusion sans commettre automatiquement
+          git checkout --ours .github/workflows/  # Garde les fichiers workflows tels qu'ils sont dans production
+          git add .  # Ajoute les fichiers modifiés
+          git commit -m "Merge main into production, excluding workflow changes"
+          git push origin production  # Pousse la branche fusionnée
 
   build_and_push_images:
     needs: merge_to_production
