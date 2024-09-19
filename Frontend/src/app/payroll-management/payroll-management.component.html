@@ -1,53 +1,89 @@
-<div class="payroll-management container mx-auto p-4">
-  <h2 class="text-xl font-bold mb-4">Gestion de la Paie</h2>
+<div class="p-4 flex flex-col flex-grow">
+  <!-- Section de la barre supérieure avec le bouton pour ajouter une nouvelle entrée de paie -->
+  <div class="p-4 rounded-lg shadow-lg bg-gray-100 dark:bg-gray-900">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2 md:mb-0">
+        Gestion des Entrées de Paie
+      </h2>
+      <button (click)="toggleForm()" class="bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg hover:bg-blue-600 transition">
+        {{ showForm ? 'Retour' : 'Ajouter une Entrée de Paie' }}
+      </button>
+    </div>
 
-  <div class="mb-4">
-    <button class="bg-blue-500 text-white py-2 px-4 rounded" (click)="toggleForm()">Ajouter une Entrée de Paie</button>
+    <!-- Affichage des messages d'alerte -->
+    <div *ngIf="alertMessage" class="mb-4">
+      <div [ngClass]="{'bg-green-500': alertType === 'success', 'bg-red-500': alertType === 'error'}"
+           class="text-white px-4 py-2 rounded-lg shadow-md">
+        {{ alertMessage }}
+      </div>
+    </div>
+
+    <!-- Formulaire d'ajout de nouvelle entrée de paie -->
+    <div *ngIf="showForm" class="mb-4">
+      <form (ngSubmit)="createPayrollEntry()" class="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-inner">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <!-- Label et champ pour Sélectionner un utilisateur -->
+          <label for="userId-create" class="block text-gray-700 dark:text-gray-300">Sélectionner un bénéficiaire</label>
+          <select [(ngModel)]="newPayrollEntry.userId" name="userId" id="userId-create" required class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="" disabled [selected]="newPayrollEntry.userId == 0">Sélectionner un Utilisateur</option>
+            <option *ngFor="let user of users" [value]="user.id">{{ user.firstname }} {{ user.lastname }}</option>
+          </select>
+
+          <!-- Label et champ pour Montant -->
+          <label for="amount-create" class="block text-gray-700 dark:text-gray-300">Entrez le montant du salaire</label>
+          <input [(ngModel)]="newPayrollEntry.amount" name="amount" id="amount-create" type="number" placeholder="Entrez le montant du salaire" required class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+          <!-- Label et champ pour Date de paiement -->
+          <label for="paymentDate-create" class="block text-gray-700 dark:text-gray-300">Date de Paiement</label>
+          <input [(ngModel)]="newPayrollEntry.paymentDate" name="paymentDate" id="paymentDate-create" type="date" required class="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 md:px-6 rounded-lg hover:bg-green-600">Créer Entrée</button>
+      </form>
+    </div>
+
+    <!-- Liste des entrées de paie -->
+    <div *ngFor="let payrollEntry of payrollEntries; let i = index" class="p-4 rounded-lg shadow-md bg-white dark:bg-gray-900 mb-4">
+      <form *ngIf="payrollEntry.isEditing; else displayMode" (ngSubmit)="updatePayrollEntry(payrollEntry.id, payrollEntry)">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- Nom de l'utilisateur (non modifiable) -->
+          <label class="block text-gray-700 dark:text-gray-300">Employé</label>
+          <input type="text" [value]="getUserNameById(payrollEntry.userId)" disabled class="p-2 border rounded bg-gray-200">
+
+          <!-- Montant (modifiable) -->
+          <label [for]="'amount-' + i" class="block text-gray-700 dark:text-gray-300">Montant</label>
+          <input [(ngModel)]="payrollEntry.amount" name="amount" [id]="'amount-' + i" type="number" class="p-2 border rounded" required>
+
+          <!-- Date de paiement (modifiable) -->
+          <label [for]="'paymentDate-' + i" class="block text-gray-700 dark:text-gray-300">Date de Paiement</label>
+          <input [(ngModel)]="payrollEntry.paymentDate" name="paymentDate" [id]="'paymentDate-' + i" type="date" class="p-2 border rounded" required>
+
+          <!-- Boutons de validation ou annulation -->
+          <div class="flex space-x-2">
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg">Valider</button>
+            <button type="button" (click)="payrollEntry.isEditing = false" class="bg-red-500 text-white px-4 py-2 rounded-lg">Annuler</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Mode d'affichage par défaut (non modifiable) -->
+      <ng-template #displayMode>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <!-- Nom de l'utilisateur -->
+          <p>{{ getUserNameById(payrollEntry.userId) }}</p>
+
+          <!-- Montant -->
+          <p>{{ payrollEntry.amount | currency }}</p>
+
+          <!-- Date de paiement -->
+          <p>{{ payrollEntry.paymentDate | date: 'yyyy-MM-dd' }}</p>
+
+          <!-- Actions (Modifier et Supprimer) -->
+          <div class="flex space-x-2 justify-end">
+            <button (click)="editPayrollEntry(payrollEntry)" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">Modifier</button>
+            <button (click)="deletePayrollEntry(payrollEntry.id)" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Supprimer</button>
+          </div>
+        </div>
+      </ng-template>
+    </div>
   </div>
-
-  <div *ngIf="showForm" class="mb-4 p-4 border rounded bg-gray-100">
-    <h3 class="text-lg font-semibold mb-2">Nouvelle Entrée de Paie</h3>
-    <form (ngSubmit)="addPayrollEntry()" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium">Employé</label>
-        <select [(ngModel)]="newPayrollEntry.employeeFirstName" name="employeeFirstName" class="mt-1 p-2 border rounded w-full" required>
-          <option *ngFor="let user of users">{{ user.firstname }} {{ user.lastname }}</option>
-        </select>
-        <select [(ngModel)]="newPayrollEntry.employeeLastName" name="employeeLastName" class="mt-1 p-2 border rounded w-full" required hidden>
-          <option *ngFor="let user of users" [ngValue]="user.lastname">{{ user.firstname }} {{ user.lastname }}</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Montant</label>
-        <input [(ngModel)]="newPayrollEntry.amount" name="amount" type="number" class="mt-1 p-2 border rounded w-full" required />
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Date de Paiement</label>
-        <input [(ngModel)]="newPayrollEntry.paymentDate" name="paymentDate" type="date" class="mt-1 p-2 border rounded w-full" required />
-      </div>
-      <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded">Ajouter</button>
-    </form>
-  </div>
-
-  <table class="min-w-full bg-white">
-    <thead>
-    <tr>
-      <th class="px-4 py-2 border">Employé</th>
-      <th class="px-4 py-2 border">Montant</th>
-      <th class="px-4 py-2 border">Date de Paiement</th>
-      <th class="px-4 py-2 border">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let entry of payrollEntries">
-      <td class="px-4 py-2 border">{{ entry.employeeFirstName }} {{ entry.employeeLastName }}</td>
-      <td class="px-4 py-2 border">{{ entry.amount | currency }}</td>
-      <td class="px-4 py-2 border">{{ entry.paymentDate | date }}</td>
-      <td class="px-4 py-2 border">
-        <button class="bg-yellow-500 text-white py-1 px-2 rounded mr-2" (click)="editPayrollEntry(entry)">Modifier</button>
-        <button class="bg-red-500 text-white py-1 px-2 rounded" (click)="deletePayrollEntry(entry)">Supprimer</button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
 </div>

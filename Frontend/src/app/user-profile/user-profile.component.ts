@@ -1,5 +1,5 @@
-import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {Component, OnInit, inject, PLATFORM_ID} from '@angular/core';
+import {CommonModule, isPlatformBrowser} from '@angular/common';
 import { UserService } from '../services/user.service';
 import { TrainingService } from '../services/training.service';
 import { TaskService } from '../services/task.service';
@@ -7,6 +7,8 @@ import { UserLogService } from '../services/user-log.service';
 import { User } from '../models/user.model';
 import { Training } from '../models/training.model';
 import { Task } from '../models/task.model';
+import {PayrollEntryService} from "../services/payroll-entry.service";
+import {PayrollEntry} from "../models/payroll-entry.model";
 
 @Component({
   selector: 'app-user-profile',
@@ -20,10 +22,12 @@ export class UserProfileComponent implements OnInit {
   trainingService = inject(TrainingService);
   taskService = inject(TaskService);
   userLogService = inject(UserLogService);
+  payrollEntryService = inject(PayrollEntryService);
   platformId = inject(PLATFORM_ID);
   user: User | null = null;
   trainings: Training[] = [];
   tasksAssigned: Task[] = [];
+  payrollEntries: PayrollEntry[] = [];
   errorMessage: string | null = null;
   lastLoginTime: Date | null = null;
   isLoading: boolean = true;
@@ -42,10 +46,11 @@ export class UserProfileComponent implements OnInit {
     try {
       this.user = await this.userService.getUserProfile();
       if (this.user && this.user.id) {
-        [this.trainings, this.tasksAssigned, this.lastLoginTime] = await Promise.all([
+        [this.trainings, this.tasksAssigned, this.lastLoginTime, this.payrollEntries] = await Promise.all([
           this.trainingService.getUserTrainings(this.user.id),
           this.taskService.getTasksAssignedToUser(this.user.email),
-          this.userLogService.getLastLoginTime(this.user.email)
+          this.userLogService.getLastLoginTime(this.user.email),
+          this.payrollEntryService.getPayrollEntriesByUserId(this.user.id)
         ]);
       }
     } catch (error) {

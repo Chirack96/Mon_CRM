@@ -11,22 +11,44 @@ export class TicketService {
 
   constructor() { }
 
-  async getAllTickets(): Promise<Ticket[]> {
-    const response = await axios.get<Ticket[]>(this.baseUrl);
+  async getTickets(): Promise<Ticket[]> {
+    const response = await axios.get<Ticket[]>(this.baseUrl, {
+      withCredentials: true
+    });
     return response.data;
   }
 
   async createTicket(ticket: Ticket): Promise<Ticket> {
-    const response = await axios.post<Ticket>(this.baseUrl, ticket);
+    const response = await axios.post<Ticket>(this.baseUrl, ticket, {
+      withCredentials: true
+    });
     return response.data;
   }
 
-  async updateTicket(ticket: Ticket): Promise<Ticket> {
-    const response = await axios.put<Ticket>(`${this.baseUrl}/${ticket.id}`, ticket);
+  async updateTicket(id: number, ticket: Ticket): Promise<Ticket> {
+    const response = await axios.put<Ticket>(`${this.baseUrl}/${id}`, ticket, {
+      withCredentials: true
+    });
     return response.data;
   }
 
   async deleteTicket(id: number): Promise<void> {
-    await axios.delete(`${this.baseUrl}/${id}`);
+    await axios.delete(`${this.baseUrl}/${id}`, {
+      withCredentials: true
+    });
+  }
+
+  async getTicketById(id: number): Promise<Ticket> {
+    const response = await axios.get<Ticket>(`${this.baseUrl}/${id}`, {
+      withCredentials: true
+    });
+    return response.data;
+  }
+
+  async getTicketsByAssignee(assignee: string): Promise<Ticket[]> {
+    const response = await axios.get<Ticket[]>(`${this.baseUrl}/assignee/${assignee}`, {
+      withCredentials: true
+    });
+    return response.data;
   }
 }

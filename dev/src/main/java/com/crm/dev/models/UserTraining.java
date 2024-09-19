@@ -16,7 +16,7 @@ public class UserTraining {
     private Long id;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("user-userTrainings")
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

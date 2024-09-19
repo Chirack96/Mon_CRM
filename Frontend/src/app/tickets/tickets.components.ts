@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { TicketService } from '../services/ticket.service';
 import { Ticket } from '../models/ticket.model';
-import {NgForOf, NgIf} from '@angular/common';
+import { UserService } from '../services/user.service';
+import { User } from '../models/user.model';
+import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -11,57 +13,128 @@ import { FormsModule } from '@angular/forms';
   imports: [
     NgForOf,
     FormsModule,
-    NgIf
+    NgIf,
+    NgClass
   ],
   styleUrls: ['./tickets.component.scss']
 })
 export class TicketsComponent implements OnInit {
   tickets: Ticket[] = [];
-  newTicket: Ticket = { id: 0, title: '', description: '', status: 'Open', createdDate: '', updatedDate: '' };
-  showAddTicketForm: boolean = false;
+  filteredTickets: Ticket[] = []; // Liste filtrée
+  users: User[] = [];
+  showCreateForm = false;
+  isEditing = false; // Pour différencier la création de la mise à jour
+  editingTicketId: number | null | undefined = null;
 
-  constructor(private ticketService: TicketService) { }
+  // Variables pour les filtres
+  searchTerm: string = ''; // Terme de recherche global
+  filterStatus: string = ''; // Filtre par statut
+  filterDueDate: string = ''; // Filtre par date d'échéance
+  filterAssignee: string = ''; // Filtre par assignee
+  filterPriority: string = ''; // Filtre par priorité
 
-  ngOnInit(): void {
-    this.fetchTickets().then(r => r);
+  // Modèle pour la création ou mise à jour
+  newTicket: Ticket = {
+    title: '',
+    description: '',
+    status: 'OPEN',
+    priority: 'LOW',
+    assignee: '',
+    reporter: '',
+    createdDate: '',
+    dueDate: ''
+  };
+
+  constructor(
+    private ticketService: TicketService,
+    private userService: UserService
+  ) { }
+
+  async ngOnInit() {
+    this.tickets = await this.ticketService.getTickets();
+    this.filteredTickets = this.tickets; // Initialiser avec tous les tickets
+    this.users = await this.userService.getUsers();
   }
 
-  async fetchTickets() {
-    try {
-      this.tickets = await this.ticketService.getAllTickets();
-    } catch (error) {
-      console.error('Error fetching tickets', error);
-    }
+  toggleCreateForm() {
+    this.showCreateForm = !this.showCreateForm;
+    this.isEditing = false; // Réinitialise à l'état de création
+    this.resetForm();
+  }
+
+  resetForm() {
+    // Réinitialise le modèle de ticket pour la création d'un nouveau ticket
+    this.newTicket = {
+      title: '',
+      description: '',
+      status: 'OPEN',
+      priority: 'LOW',
+      assignee: '',
+      reporter: '',
+      createdDate: '',
+      dueDate: ''
+    };
   }
 
   async createTicket() {
-    try {
-      this.newTicket.createdDate = new Date().toISOString();
-      this.newTicket.updatedDate = this.newTicket.createdDate;
-      const createdTicket = await this.ticketService.createTicket(this.newTicket);
-      this.tickets.push(createdTicket);
-      this.newTicket = { id: 0, title: '', description: '', status: 'Open', createdDate: '', updatedDate: '' }; // Réinitialiser le formulaire
-      this.showAddTicketForm = false; // Masquer le formulaire après la création du ticket
-    } catch (error) {
-      console.error('Error creating ticket', error);
-    }
-  }
-
-  async updateTicket(ticket: Ticket) {
-    try {
-      ticket.updatedDate = new Date().toISOString();
-      await this.ticketService.updateTicket(ticket);
-    } catch (error) {
-      console.error('Error updating ticket', error);
-    }
+    const newTicket = await this.ticketService.createTicket(this.newTicket);
+    this.tickets.push(newTicket);
+    this.filteredTickets = this.tickets;
+    this.toggleCreateForm(); // Cacher le formulaire après la création
+    this.resetForm(); // Réinitialise le formulaire
   }
 
   async deleteTicket(id: number) {
-    try {
-      await this.ticketService.deleteTicket(id);
-      this.tickets = this.tickets.filter(ticket => ticket.id !== id);
-    } catch (error) {
-      console.error('Error deleting ticket', error);
+    await this.ticketService.deleteTicket(id);
+    this.tickets = this.tickets.filter(ticket => ticket.id !== id);
+    this.filterTickets(); // Appliquer le filtre après suppression
+  }
+
+  // Méthode de filtrage améliorée pour prendre en compte les nouveaux critères
+  filterTickets() {
+    const lowerCaseSearchTerm = this.searchTerm.toLowerCase();
+    this.filteredTickets = this.tickets.filter(ticket => {
+      const matchesSearchTerm = (
+        ticket.title.toLowerCase().includes(lowerCaseSearchTerm) ||
+        ticket.description.toLowerCase().includes(lowerCaseSearchTerm) ||
+        ticket.assignee.toLowerCase().includes(lowerCaseSearchTerm) ||
+        ticket.reporter.toLowerCase().includes(lowerCaseSearchTerm) ||
+        ticket.status.toLowerCase().includes(lowerCaseSearchTerm) ||
+        ticket.priority.toLowerCase().includes(lowerCaseSearchTerm) ||
+        (ticket.comments && ticket.comments.toLowerCase().includes(lowerCaseSearchTerm)) ||
+        (ticket.dueDate && ticket.dueDate.toString().toLowerCase().includes(lowerCaseSearchTerm)) ||
+        (ticket.createdDate && ticket.createdDate.toString().toLowerCase().includes(lowerCaseSearchTerm))
+      );
+
+      const matchesStatus = this.filterStatus === '' || ticket.status === this.filterStatus;
+      const matchesDueDate = this.filterDueDate === '' || ticket.dueDate === this.filterDueDate;
+      const matchesAssignee = this.filterAssignee === '' || ticket.assignee === this.filterAssignee;
+      const matchesPriority = this.filterPriority === '' || ticket.priority === this.filterPriority;
+
+      return matchesSearchTerm && matchesStatus && matchesDueDate && matchesAssignee && matchesPriority;
+    });
+  }
+
+  // Activer le mode édition pour un ticket
+  editTicket(ticket: Ticket) {
+    this.showCreateForm = true;
+    this.isEditing = true;
+    this.editingTicketId = ticket.id ?? null; // Utiliser null si ticket.id est undefined
+    this.newTicket = { ...ticket };
+  }
+
+  // Mettre à jour un ticket
+  async updateTicket() {
+    if (this.editingTicketId) {
+      await this.ticketService.updateTicket(this.editingTicketId, this.newTicket);
+      // Mettre à jour la liste locale
+      const ticketIndex = this.tickets.findIndex(ticket => ticket.id === this.editingTicketId);
+      if (ticketIndex !== -1) {
+        this.tickets[ticketIndex] = { ...this.newTicket };
+      }
+      this.filteredTickets = this.tickets; // Mettre à jour les tickets filtrés
+      this.toggleCreateForm(); // Cacher le formulaire après la mise à jour
+      this.resetForm();
     }
   }
 }

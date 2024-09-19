@@ -1,53 +1,176 @@
-<div class="p-4 flex flex-col flex-grow">
-  <div class="p-4 rounded-lg dark:border-gray-700">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-semibold text-gray-700">Tickets</h2>
-      <button (click)="showAddTicketForm = !showAddTicketForm" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700">
-        {{ showAddTicketForm ? 'Hide Form' : 'Add Ticket' }}
-      </button>
+<div class="container mx-auto p-8 bg-gray-100 min-h-screen">
+  <h1 class="text-4xl font-extrabold mb-8 text-center text-gray-800">Tickets Board</h1>
+
+  <!-- Barre de recherche pour filtrer les tickets -->
+  <div class="mb-6">
+    <input type="text" [(ngModel)]="searchTerm" (input)="filterTickets()" placeholder="Rechercher des tickets..." class="w-full p-4 border border-gray-300 rounded-lg shadow-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+  </div>
+
+  <!-- Filtres supplémentaires -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
+
+    <!-- Filtre par statut -->
+    <div>
+      <label class="block text-gray-600 font-semibold mb-2">Filtrer par Statut</label>
+      <select [(ngModel)]="filterStatus" (change)="filterTickets()" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
+        <option value="">Tous</option>
+        <option value="open">Ouvert</option>
+        <option value="in_progress">En cours</option>
+        <option value="closed">Fermé</option>
+      </select>
     </div>
 
-    <div *ngIf="showAddTicketForm" class="mb-4">
-      <form (ngSubmit)="createTicket()" #ticketForm="ngForm">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          <input [(ngModel)]="newTicket.title" name="title" placeholder="Title" required class="p-2 border rounded">
-          <input [(ngModel)]="newTicket.description" name="description" placeholder="Description" required class="p-2 border rounded">
-          <select [(ngModel)]="newTicket.status" name="status" required class="p-2 border rounded">
-            <option value="Open">Open</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Closed">Closed</option>
-          </select>
-        </div>
-        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600">Create Ticket</button>
-      </form>
+    <!-- Filtre par date d'échéance -->
+    <div>
+      <label class="block text-gray-600 font-semibold mb-2">Filtrer par Date d'Échéance</label>
+      <input type="date" [(ngModel)]="filterDueDate" (change)="filterTickets()" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" />
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white">
-        <thead>
-        <tr>
-          <th class="py-2 px-4 border-b border-gray-200">Title</th>
-          <th class="py-2 px-4 border-b border-gray-200">Description</th>
-          <th class="py-2 px-4 border-b border-gray-200">Status</th>
-          <th class="py-2 px-4 border-b border-gray-200">Created Date</th>
-          <th class="py-2 px-4 border-b border-gray-200">Updated Date</th>
-          <th class="py-2 px-4 border-b border-gray-200">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let ticket of tickets">
-          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.title }}</td>
-          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.description }}</td>
-          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.status }}</td>
-          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.createdDate }}</td>
-          <td class="py-2 px-4 border-b border-gray-200">{{ ticket.updatedDate }}</td>
-          <td class="py-2 px-4 border-b border-gray-200">
-            <button (click)="updateTicket(ticket)" class="bg-yellow-500 text-white px-4 py-1 rounded-lg shadow-md hover:bg-yellow-600">Edit</button>
-            <button (click)="deleteTicket(ticket.id)" class="bg-red-500 text-white px-4 py-1 rounded-lg shadow-md hover:bg-red-600 ml-2">Delete</button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+    <!-- Filtre par Assignee -->
+    <div>
+      <label class="block text-gray-600 font-semibold mb-2">Filtrer par Assignee</label>
+      <select [(ngModel)]="filterAssignee" (change)="filterTickets()" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
+        <option value="">Tous</option>
+        <option *ngFor="let user of users" [value]="user.firstname">{{ user.lastname }} {{ user.firstname }}</option>
+      </select>
+    </div>
+
+    <!-- Filtre par priorité -->
+    <div>
+      <label class="block text-gray-600 font-semibold mb-2">Filtrer par Priorité</label>
+      <select [(ngModel)]="filterPriority" (change)="filterTickets()" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none">
+        <option value="">Toutes</option>
+        <option value="low">Basse</option>
+        <option value="medium">Moyenne</option>
+        <option value="high">Haute</option>
+      </select>
+    </div>
+
+  </div>
+
+  <!-- Bouton pour afficher ou cacher le formulaire de création -->
+  <button (click)="toggleCreateForm()" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg shadow hover:from-blue-600 hover:to-purple-700 transition mb-6">
+    {{ showCreateForm ? 'Annuler' : 'Créer un nouveau ticket' }}
+  </button>
+
+  <!-- Formulaire de création ou modification de ticket -->
+  <div *ngIf="showCreateForm" class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-700">{{ isEditing ? 'Modifier le ticket' : 'Nouveau Ticket' }}</h2>
+
+    <form (ngSubmit)="isEditing ? updateTicket() : createTicket()" class="space-y-4">
+      <!-- Titre -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Titre</label>
+        <input [(ngModel)]="newTicket.title" name="title" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Titre du ticket" required />
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Description</label>
+        <textarea [(ngModel)]="newTicket.description" name="description" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Description du ticket" required></textarea>
+      </div>
+
+      <!-- Assignee -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Assignee</label>
+        <select [(ngModel)]="newTicket.assignee" name="assignee" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+          <option *ngFor="let user of users" [value]="user.firstname">{{ user.lastname }} {{ user.firstname }}</option>
+        </select>
+      </div>
+
+      <!-- Reporter -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Reporter</label>
+        <select [(ngModel)]="newTicket.reporter" name="reporter" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+          <option *ngFor="let user of users" [value]="user.firstname">{{ user.lastname }} {{ user.firstname }}</option>
+        </select>
+      </div>
+
+      <!-- Priorité -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Priorité</label>
+        <select [(ngModel)]="newTicket.priority" name="priority" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+          <option value="low">Basse</option>
+          <option value="medium">Moyenne</option>
+          <option value="high">Haute</option>
+        </select>
+      </div>
+
+      <!-- Statut -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Statut</label>
+        <select [(ngModel)]="newTicket.status" name="status" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+          <option value="open">Ouvert</option>
+          <option value="in_progress">En cours</option>
+          <option value="closed">Fermé</option>
+        </select>
+      </div>
+
+      <!-- Type -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Type</label>
+        <select [(ngModel)]="newTicket.type" name="type" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" required>
+          <option value="bug">Bug</option>
+          <option value="feature">Fonctionnalité</option>
+          <option value="task">Tâche</option>
+        </select>
+      </div>
+
+      <!-- Résolution -->
+      <div *ngIf="newTicket.status === 'closed'">
+        <label class="block text-gray-600 font-semibold">Résolution</label>
+        <input [(ngModel)]="newTicket.resolution" name="resolution" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Résolution du ticket" />
+      </div>
+
+      <!-- Commentaires -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Commentaires</label>
+        <textarea [(ngModel)]="newTicket.comments" name="comments" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" placeholder="Commentaires"></textarea>
+      </div>
+
+      <!-- Date d'échéance -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Date d'échéance</label>
+        <input type="date" [(ngModel)]="newTicket.dueDate" name="dueDate" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" required />
+      </div>
+
+      <!-- Date de création (sélectionnable) -->
+      <div>
+        <label class="block text-gray-600 font-semibold">Date de création</label>
+        <input type="date" [(ngModel)]="newTicket.createdDate" name="createdDate" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" required />
+      </div>
+
+      <!-- Date de mise à jour (lecture seule) -->
+      <div *ngIf="isEditing && newTicket.updatedDate">
+        <label class="block text-gray-600 font-semibold">Dernière mise à jour</label>
+        <input type="text" [(ngModel)]="newTicket.updatedDate" name="updatedDate" class="w-full p-4 border border-gray-300 rounded-lg bg-gray-200 focus:outline-none" readonly />
+      </div>
+
+      <!-- Date de fermeture (si fermé) -->
+      <div *ngIf="newTicket.status === 'closed'">
+        <label class="block text-gray-600 font-semibold">Date de fermeture</label>
+        <input type="date" [(ngModel)]="newTicket.closedDate" name="closedDate" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" />
+      </div>
+
+      <div class="flex justify-end">
+        <button type="submit" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition">
+          {{ isEditing ? 'Mettre à jour' : 'Créer le ticket' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Liste des tickets sous forme de cartes -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let ticket of filteredTickets" class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow flex flex-col justify-between h-full">
+      <div>
+        <h3 class="text-xl font-semibold text-gray-800">{{ ticket.title }}</h3>
+        <p class="text-gray-600 mt-2">{{ ticket.description }}</p>
+      </div>
+      <div class="mt-auto pt-4 flex justify-between">
+        <button (click)="editTicket(ticket)" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">Modifier</button>
+        <button (click)="deleteTicket(ticket.id!)" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">Supprimer</button>
+      </div>
     </div>
   </div>
 </div>

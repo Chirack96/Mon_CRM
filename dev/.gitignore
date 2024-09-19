@@ -30,7 +30,3 @@ build/
 ### VS Code ###
 .vscode/
 application.properties
-Dockerfile
-.github/workflows/deploy.yml
-.github/workflows/production.yml
-docker-compose.yml

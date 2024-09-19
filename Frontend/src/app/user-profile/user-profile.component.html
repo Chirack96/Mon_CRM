@@ -1,5 +1,5 @@
 <div *ngIf="isLoading; else content" class="flex items-center justify-center h-full">
-  <p class="text-white text-lg animate-pulse">Chargement du profil utilisateur...</p>
+  <p class="text-black text-lg animate-pulse">Chargement du profil utilisateur...</p>
 </div>
 <ng-template #content>
   <div *ngIf="user" class="max-w-4xl mx-auto p-6">
@@ -22,8 +22,9 @@
       </div>
     </div>
 
+    <!-- Section des formations -->
     <div *ngIf="trainings.length > 0; else noTrainings" class="mb-6">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Formations</h2>
+      <h2 class="text-2xl font-semibold mb-4 text-black">Formations</h2>
       <div class="hidden md:block">
         <div class="overflow-x-auto">
           <table class="min-w-full bg-white shadow-2xl rounded-lg">
@@ -53,11 +54,47 @@
       </div>
     </div>
     <ng-template #noTrainings>
-      <p class="text-white">Aucune formation trouvée pour cet utilisateur.</p>
+      <p class="text-black">Aucune formation trouvée pour cet utilisateur.</p>
     </ng-template>
 
+    <!-- Section des bulletins de paie -->
+    <div *ngIf="payrollEntries.length > 0; else noPayrollEntries" class="mb-6">
+      <h2 class="text-2xl font-semibold mb-4 text-black">Historique de Paie</h2>
+      <div class="hidden md:block">
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white shadow-2xl rounded-lg">
+            <thead class="bg-green-200">
+            <tr>
+              <th class="py-2 px-4">Employé</th>
+              <th class="py-2 px-4">Salaire</th>
+              <th class="py-2 px-4">Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let payroll of payrollEntries" class="hover:bg-green-100 transition duration-300">
+              <td class="border px-4 py-2">{{ user.firstname }} {{ user.lastname }}</td> <!-- Affichage du nom complet -->
+              <td class="border px-4 py-2">{{ payroll.amount | currency }}</td>
+              <td class="border px-4 py-2">{{ payroll.paymentDate | date }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="block md:hidden">
+        <div *ngFor="let payroll of payrollEntries" class="mb-4 p-4 bg-white shadow-2xl rounded-lg">
+          <p class="text-gray-700"><strong>Employé :</strong> {{ user.firstname }} {{ user.lastname }}</p>
+          <p class="text-gray-700"><strong>Montant :</strong> {{ payroll.amount | currency }}</p>
+          <p class="text-gray-700"><strong>Date :</strong> {{ payroll.paymentDate | date }}</p>
+        </div>
+      </div>
+    </div>
+    <ng-template #noPayrollEntries>
+      <p class="text-black">Aucun bulletin de paie trouvé pour cet utilisateur.</p>
+    </ng-template>
+
+    <!-- Section des tâches assignées -->
     <div *ngIf="tasksAssigned.length > 0; else noTasksAssigned">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Tâches Assignées</h2>
+      <h2 class="text-2xl font-semibold mb-4 text-black">Tâches Assignées</h2>
       <div class="hidden md:block">
         <div class="overflow-x-auto">
           <table class="min-w-full bg-white shadow-2xl rounded-lg">
@@ -93,7 +130,7 @@
       </div>
     </div>
     <ng-template #noTasksAssigned>
-      <p class="text-white">Aucune tâche assignée à cet utilisateur.</p>
+      <p class="text-black">Aucune tâche assignée à cet utilisateur.</p>
     </ng-template>
   </div>
   <div *ngIf="errorMessage" class="text-red-600 mt-4 text-center animate-bounce">{{ errorMessage }}</div>

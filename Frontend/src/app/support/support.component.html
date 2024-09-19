@@ -1,0 +1,105 @@
+<div class="container mx-auto p-8 bg-white">
+  <h1 class="text-4xl font-bold mb-6 text-center text-blue-500">Support et Assistance</h1>
+
+  <!-- Section FAQ -->
+  <div class="faq-section mb-12 bg-gray-100 p-6 rounded-lg shadow-md">
+    <h2 class="text-3xl font-semibold mb-6 text-gray-700">Foire Aux Questions (FAQ)</h2>
+    <div *ngFor="let faq of faqs" class="faq-item mb-4 border-b border-blue-300">
+      <h3 (click)="toggleFaq(faq.id)" class="cursor-pointer text-xl font-bold flex justify-between items-center text-blue-500">
+        {{ faq.question }}
+        <span class="transition-transform duration-300" [ngClass]="faq.isOpen ? 'rotate-180' : 'rotate-0'">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.292 7.293a1 1 0 011.415 0L10 10.586l3.293-3.293a1 1 0 111.415 1.415l-4 4a1 1 0 01-1.415 0l-4-4a1 1 0 010-1.415z" clip-rule="evenodd" />
+          </svg>
+        </span>
+      </h3>
+      <p *ngIf="faq.isOpen" class="mt-2 text-gray-700 transition-opacity duration-500">{{ faq.answer }}</p>
+    </div>
+  </div>
+
+  <!-- Formulaire de soumission de ticket -->
+  <div class="support-ticket-form mb-12 bg-white p-6 rounded-lg shadow-lg">
+    <h2 class="text-3xl font-semibold mb-6 text-gray-700">Soumettre un Ticket de Support</h2>
+    <form (ngSubmit)="submitTicket()" class="space-y-4">
+      <div>
+        <label for="name" class="block text-lg font-medium text-gray-700">Nom</label>
+        <input [(ngModel)]="ticket.name" name="name" id="name" class="w-full p-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" type="text" required>
+      </div>
+      <div>
+        <label for="email" class="block text-lg font-medium text-gray-700">Email</label>
+        <input [(ngModel)]="ticket.email" name="email" id="email" class="w-full p-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" type="email" required>
+      </div>
+      <div>
+        <label for="issue" class="block text-lg font-medium text-gray-700">Description du problème</label>
+        <textarea [(ngModel)]="ticket.issue" name="issue" id="issue" class="w-full p-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors" required></textarea>
+      </div>
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-transform transform hover:scale-105">Envoyer</button>
+    </form>
+  </div>
+
+  <!-- Chat en direct -->
+  <div class="live-chat mb-12 bg-gray-100 p-6 rounded-lg shadow-lg">
+    <h2 class="text-3xl font-semibold mb-6 text-gray-700">Chat de Support</h2>
+    <div class="chat-window border p-4 rounded h-64 overflow-y-auto bg-white mb-4">
+      <div *ngFor="let message of chatMessages" class="chat-message mb-2" [ngClass]="{ 'text-right': !message.isAgent }">
+        <p class="inline-block p-2 rounded transition-all duration-300" [ngClass]="message.isAgent ? 'bg-green-300' : 'bg-blue-300'">
+          {{ message.text }}
+        </p>
+      </div>
+      <div *ngIf="isTyping" class="text-gray-500 text-sm italic">L'agent est en train d'écrire...</div>
+    </div>
+    <form (ngSubmit)="sendMessage()" class="flex space-x-4">
+      <input [(ngModel)]="userMessage" name="message" class="flex-grow p-2 border rounded" placeholder="Tapez votre message ici..." required>
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Envoyer</button>
+    </form>
+  </div>
+
+  <!-- Documentation -->
+  <div class="documentation mb-12">
+    <h2 class="text-3xl font-semibold mb-6 text-gray-700">Documentation</h2>
+    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <li class="p-4 border rounded hover:shadow-lg transition-shadow">
+        <a href="/docs/guide1" class="flex items-center text-blue-500 hover:underline">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M8 5a2 2 0 011.447-.894l.12-.013A2 2 0 0112 5v4h4a2 2 0 010 4h-4v4a2 2 0 11-4 0v-4H4a2 2 0 110-4h4V5z" />
+          </svg>
+          Guide d'installation
+        </a>
+      </li>
+      <li class="p-4 border rounded hover:shadow-lg transition-shadow">
+        <a href="/docs/guide2" class="flex items-center text-blue-500 hover:underline">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M8 5a2 2 0 011.447-.894l.12-.013A2 2 0 0112 5v4h4a2 2 0 010 4h-4v4a2 2 0 11-4 0v-4H4a2 2 0 110-4h4V5z" />
+          </svg>
+          Comment utiliser notre application
+        </a>
+      </li>
+      <li class="p-4 border rounded hover:shadow-lg transition-shadow">
+        <a href="/docs/faq" class="flex items-center text-blue-500 hover:underline">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M8 5a2 2 0 011.447-.894l.12-.013A2 2 0 0112 5v4h4a2 2 0 010 4h-4v4a2 2 0 11-4 0v-4H4a2 2 0 110-4h4V5z" />
+          </svg>
+          FAQ complète
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Statut du service -->
+  <div class="service-status mb-12 bg-white p-6 rounded-lg shadow-lg">
+    <h2 class="text-3xl font-semibold mb-6 text-gray-700">Statut des Services</h2>
+    <ul class="space-y-2">
+      <li *ngFor="let service of services" class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-8a1 1 0 100 2h2a1 1 0 000-2H9z" clip-rule="evenodd" />
+          </svg>
+          <span>{{ service.name }}</span>
+        </div>
+        <span [ngClass]="{'text-green-500': service.status === 'ok', 'text-red-500': service.status === 'down'}" class="px-2 py-1 text-xs font-medium rounded">
+          {{ service.status | uppercase }}
+        </span>
+      </li>
+    </ul>
+  </div>
+</div>
