@@ -39,7 +39,13 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            System.out.println("Utilisateur avec l'ID " + id + " non trouvé.");
+        } else {
+            System.out.println("Utilisateur trouvé : " + user.getFirstname() + " " + user.getLastname());
+        }
+        return user;
     }
 
     public User getUserByGroupe(String groupe) {

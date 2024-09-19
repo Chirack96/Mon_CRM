@@ -18,7 +18,7 @@ public class UserLog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonBackReference("user-userLogs")
     private User user; // Relie UserLog à User
 
     @Column(nullable = true)

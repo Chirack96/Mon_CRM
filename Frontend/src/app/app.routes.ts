@@ -17,6 +17,8 @@ import {ScheduleCalendarComponent} from "./schedule-calendar/schedule-calendar.c
 import {UserProfileComponent} from "./user-profile/user-profile.component";
 import {HomeComponent} from "./home/home.component";
 import {TrainingComponent} from "./training/training.component";
+import {MarketingComponent} from "./marketing/marketing.component";
+import {SupportComponent} from "./support/support.component";
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -35,6 +37,8 @@ export const routes: Routes = [
   {path: 'schedule-calendar', component: ScheduleCalendarComponent, canActivate: [AuthGuard]},
   {path: 'trainings', component: TrainingComponent, canActivate: [AuthGuard]},
   {path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard]},
+  {path: 'marketing', component: MarketingComponent, canActivate: [AuthGuard]},
+  {path: 'support', component: SupportComponent, canActivate: [AuthGuard]},
   {path: '', component: HomeComponent},
   { path: '**', redirectTo: '' }
 ];

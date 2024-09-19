@@ -23,7 +23,7 @@ public class VerificationToken {
     private Date expiryDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonBackReference("user-verificationTokens")
     @JoinColumn(name = "user_id", nullable = false)
     private User user;  // Liaison avec l'utilisateur
 

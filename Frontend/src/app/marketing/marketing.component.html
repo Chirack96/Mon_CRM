@@ -1,0 +1,54 @@
+<div class="container mx-auto p-8">
+  <h1 class="text-4xl font-bold mb-6 text-center">Gestion des Campagnes Marketing</h1>
+
+  <!-- Graphique global des performances -->
+  <div class="mb-6">
+    <h2 class="text-2xl font-semibold mb-4">Performances Générales des Campagnes</h2>
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+      <canvas #performanceChart></canvas>
+    </div>
+  </div>
+
+  <!-- Liste des campagnes marketing avec graphiques individuels -->
+  <div class="mb-6">
+    <h2 class="text-2xl font-semibold mb-4">Campagnes Actuelles</h2>
+    <div *ngIf="campaigns.length > 0; else noCampaigns" class="overflow-x-auto">
+      <table class="table-auto w-full text-left border-collapse border border-gray-200 shadow-sm rounded-lg">
+        <thead>
+        <tr class="bg-gray-100 text-gray-700">
+          <th class="px-4 py-2">Nom</th>
+          <th class="px-4 py-2">Objectif</th>
+          <th class="px-4 py-2">Date de début</th>
+          <th class="px-4 py-2">Date de fin</th>
+          <th class="px-4 py-2">Statut</th>
+          <th class="px-4 py-2">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let campaign of campaigns; let i = index" class="border-b hover:bg-gray-50">
+          <td class="px-4 py-2">{{ campaign.name }}</td>
+          <td class="px-4 py-2">{{ campaign.objective }}</td>
+          <td class="px-4 py-2">{{ campaign.startDate }}</td>
+          <td class="px-4 py-2">{{ campaign.endDate }}</td>
+          <td class="px-4 py-2">{{ campaign.status }}</td>
+          <td class="px-4 py-2">
+            <button (click)="createIndividualChart(i)" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600">Voir performances</button>
+            <button (click)="deleteCampaign(i)" class="bg-red-500 text-white px-4 py-2 rounded-lg ml-2 hover:bg-red-600">Supprimer</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <ng-template #noCampaigns>
+      <p class="text-gray-500">Aucune campagne marketing pour le moment.</p>
+    </ng-template>
+  </div>
+
+  <!-- Graphiques individuels des campagnes -->
+  <div *ngFor="let campaign of campaigns; let i = index" class="mt-8">
+    <h3 class="text-xl font-semibold mb-4">{{ campaign.name }} - Performances</h3>
+    <div class="bg-white p-6 rounded-lg shadow-lg mt-4">
+      <canvas id="campaignPerformanceChart{{i}}" width="400" height="200"></canvas> <!-- Canvas pour les performances de la campagne -->
+    </div>
+  </div>
+</div>

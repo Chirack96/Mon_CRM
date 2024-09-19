@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  angular-app:
+    image: chirack96/angular-app:latest
+    ports:
+      - "80:80"
+    networks:
+      - crm-network
+    depends_on:
+      - springboot-app
+    restart: always
+
+  springboot-app:
+    image: chirack96/springboot-app:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    networks:
+      - crm-network
+    ports:
+      - "9696:8080"
+    depends_on:
+      - mysql
+    restart: always
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: moncrm
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - crm-network
+    restart: always
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8035:8080"
+    networks:
+      - crm-network
+
+networks:
+  crm-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
