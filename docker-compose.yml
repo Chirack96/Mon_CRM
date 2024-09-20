@@ -15,9 +15,9 @@ services:
     image: chirack96/springboot-app:latest
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}
-      - SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
-      - SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      - SPRING_DATASOURCE_URL=${secrets.SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${secrets.SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${secrets.SPRING_DATASOURCE_PASSWORD}
     networks:
       - crm-network
     ports:
@@ -30,9 +30,9 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_DATABASE: moncrm
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      MYSQL_USER: ${{ secrets.MYSQL_USER }}
-      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_ROOT_PASSWORD: ${secrets.MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${secrets.MYSQL_USER}
+      MYSQL_PASSWORD: ${secrets.MYSQL_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
