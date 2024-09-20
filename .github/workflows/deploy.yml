@@ -33,8 +33,11 @@ jobs:
             git checkout -b production origin/production
           fi
 
-          git merge main --no-commit --no-ff  # Effectue la fusion sans commettre automatiquement
-          git restore --staged .github/workflows/  # Réinitialise les workflows pour ne pas les inclure dans le commit
+          # Fusionne main dans production sans commettre automatiquement
+          git merge main --no-commit --no-ff
+
+          # Réinitialise les workflows pour ne pas les inclure dans le commit
+          git restore --staged .github/workflows/  
 
           # Vérifier s'il y a des changements à commettre
           if git diff-index --quiet HEAD; then
@@ -66,17 +69,17 @@ jobs:
 
       - name: Build and push Backend (Spring Boot) Docker image
         run: |
-          docker build -t chirack96/springboot-app:latest ./dev || { echo "Docker build failed"; exit 1; }
-          docker push chirack96/springboot-app:latest || { echo "Docker push failed"; exit 1; }
+          docker build -t ${{ env.DOCKER_USERNAME }}/springboot-app:latest ./dev || { echo "Docker build failed"; exit 1; }
+          docker push ${{ env.DOCKER_USERNAME }}/springboot-app:latest || { echo "Docker push failed"; exit 1; }
 
       - name: Build and push Frontend (Angular) Docker image
         run: |
-          docker build -t chirack96/angular-app:latest ./Frontend || { echo "Docker build failed"; exit 1; }
-          docker push chirack96/angular-app:latest || { echo "Docker push failed"; exit 1; }
+          docker build -t ${{ env.DOCKER_USERNAME }}/angular-app:latest ./Frontend || { echo "Docker build failed"; exit 1; }
+          docker push ${{ env.DOCKER_USERNAME }}/angular-app:latest || { echo "Docker push failed"; exit 1; }
 
       - name: Clean up Docker images
         run: |
-          docker image prune -f
+          docker image prune -f  # Nettoie les images Docker non utilisées
 
   deploy_to_server:
     needs: build_and_push_images
@@ -91,5 +94,5 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd C:/Users/chira/Documents/Pro/Mon_CRM
-            docker-compose pull
-            docker-compose up -d
+            docker-compose pull  # Récupère les nouvelles images Docker
+            docker-compose up -d  # Démarre les conteneurs en arrière-plan
