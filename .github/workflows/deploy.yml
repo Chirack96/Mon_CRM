@@ -90,9 +90,10 @@ jobs:
         uses: appleboy/ssh-action@v0.1.3
         with:
           debug: true
-          host: ${{ secrets.SERVER_HOST }}
+          host: ${{ secrets.SERVER_HOST }}  # L'IP publique de votre box
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
+          port: 32770  # Port externe redirigé vers le port 22
           script: |
             cd C:/Users/chira/Documents/Pro/Mon_CRM
             docker-compose pull  # Récupère les nouvelles images Docker
