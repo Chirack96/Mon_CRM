@@ -30,8 +30,13 @@ jobs:
           fi
           git merge main --no-commit --no-ff  # Effectue la fusion sans commettre automatiquement
           git restore --staged .github/workflows/  # Réinitialise les workflows pour ne pas les inclure dans le commit
-          git commit -m "Merge main into production, excluding workflow changes"
-          git push origin production  # Pousse la branche fusionnée
+          
+          # Vérifier s'il y a des changements à commettre
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Merge main into production, excluding workflow changes"
+            git push origin production  # Pousse la branche fusionnée
+          else
+            echo "Rien à commettre, l'arbre de travail est propre."
 
   build_and_push_images:
     needs: merge_to_production
@@ -44,16 +49,22 @@ jobs:
           ref: production
           fetch-depth: 0  # Récupère tout l'historique et toutes les branches
 
+      - name: Check Docker username
+        run: |
+          echo "Docker Username: ${{ secrets.DOCKER_USERNAME }}"  # Étape pour vérifier le nom d'utilisateur Docker
+
+      - name: Docker login to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Build and push Backend (Spring Boot) Docker image
         run: |
           docker build -t chirack96/springboot-app:latest ./dev  # Forcer le nom d'utilisateur en minuscule
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push chirack96/springboot-app:latest  # Pousse l'image backend avec le nom correct
 
       - name: Build and push Frontend (Angular) Docker image
         run: |
           docker build -t chirack96/angular-app:latest ./Frontend  # Utilise le bon chemin et forcer le nom en minuscule
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker push chirack96/angular-app:latest  # Pousse l'image frontend avec le nom correct
 
   deploy_to_server:
