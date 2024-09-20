@@ -28,15 +28,17 @@ jobs:
           else
             git checkout -b production origin/production
           fi
+          
           git merge main --no-commit --no-ff  # Effectue la fusion sans commettre automatiquement
           git restore --staged .github/workflows/  # Réinitialise les workflows pour ne pas les inclure dans le commit
           
           # Vérifier s'il y a des changements à commettre
-          if ! git diff-index --quiet HEAD; then
+          if git diff-index --quiet HEAD; then
+            echo "Rien à commettre, l'arbre de travail est propre."
+          else
             git commit -m "Merge main into production, excluding workflow changes"
             git push origin production  # Pousse la branche fusionnée
-          else
-            echo "Rien à commettre, l'arbre de travail est propre."
+          fi
 
   build_and_push_images:
     needs: merge_to_production
@@ -59,13 +61,13 @@ jobs:
 
       - name: Build and push Backend (Spring Boot) Docker image
         run: |
-          docker build -t chirack96/springboot-app:latest ./dev  # Forcer le nom d'utilisateur en minuscule
-          docker push chirack96/springboot-app:latest  # Pousse l'image backend avec le nom correct
+          docker build -t chirack96/springboot-app:latest ./dev
+          docker push chirack96/springboot-app:latest
 
       - name: Build and push Frontend (Angular) Docker image
         run: |
-          docker build -t chirack96/angular-app:latest ./Frontend  # Utilise le bon chemin et forcer le nom en minuscule
-          docker push chirack96/angular-app:latest  # Pousse l'image frontend avec le nom correct
+          docker build -t chirack96/angular-app:latest ./Frontend
+          docker push chirack96/angular-app:latest
 
   deploy_to_server:
     needs: build_and_push_images
