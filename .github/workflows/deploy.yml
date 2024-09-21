@@ -54,6 +54,7 @@ jobs:
           else
             git commit -m "Merge main into production, excluding workflow changes"
             git push origin production  # Pousse la branche fusionnée
+          fi
 
   build_and_push_images:
     needs: merge_to_production
