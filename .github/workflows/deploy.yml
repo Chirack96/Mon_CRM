@@ -8,12 +8,6 @@ on:
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-  MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-  MYSQL_USER: ${{ secrets.MYSQL_USER }}
-  SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-  SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-  SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
   SERVER_HOST: ${{ secrets.SERVER_HOST }}
   SERVER_USER: ${{ secrets.SERVER_USER }}
   SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
@@ -46,7 +40,7 @@ jobs:
           git merge main --no-commit --no-ff
 
           # Réinitialise les workflows pour ne pas les inclure dans le commit
-          git restore --staged .github/workflows/  
+          git restore --staged .github/workflows/
 
           # Vérifier s'il y a des changements à commettre
           if git diff-index --quiet HEAD; then
@@ -67,10 +61,6 @@ jobs:
         with:
           ref: production
           fetch-depth: 0  # Récupère tout l'historique et toutes les branches
-
-      - name: Check Docker username
-        run: |
-          echo "Docker Username: ${{ env.DOCKER_USERNAME }}"  # Vérification du nom d'utilisateur Docker
 
       - name: Docker login to Docker Hub
         run: |
@@ -105,12 +95,5 @@ jobs:
           port: 32770  # Port externe redirigé vers le port 22
           script: |
             cd C:/Users/chira/Documents/Pro/Mon_CRM
-            # Créer le fichier .env avec les secrets
-            echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" > .env
-            echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
-            echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
-            echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
-            echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-            echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-            docker-compose pull  # Récupère les nouvelles images Docker
-            docker-compose up -d  # Démarre les conteneurs en arrière-plan
+            docker-compose --env-file .env.prod pull  # Récupère les nouvelles images Docker en utilisant le fichier .env.prod
+            docker-compose --env-file .env.prod up -d  # Démarre les conteneurs en arrière-plan en utilisant le fichier .env.prod
