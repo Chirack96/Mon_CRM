@@ -8,7 +8,7 @@
   <nav class="hidden md:flex space-x-4 ml-4">
     <!-- Navigation Desktop -->
     <a *ngIf="isLogged && (isRole('ADMIN') || isRole('MANAGER'))" routerLink="/dashboard" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
-      <i class="fas fa-tachometer-alt mr-2"></i>Dashboarddd
+      <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
     </a>
     <a *ngIf="isLogged" routerLink="/customers" class="flex items-center bg-white text-blue-600 px-3 py-2 rounded hover:bg-gray-200 transition duration-300">
       <i class="fas fa-users mr-2"></i>Customers
